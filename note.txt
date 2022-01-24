@@ -1,0 +1,12 @@
+Quando inserisco la posizione mi servira':
+- la foto;
+- la posizione: questa potra' essere data da: 1. coordinate GPS, 2. un indirizzo da validare tramite un api (?)
+
+
+Sulla mappa poi mostrero' 1 indicatore per punto di inquinamento raggruppandoli in funzione della distanza tra di essi e del livello di ingrandimento della mappa.
+Se un indicatore e' individuale clicandolo si potra' raggiungere direttamente una pagina con la foto dell'inquinamento e una descrizione (se prevista),
+se si clicca su un indicatore multiplo invece si espandera' il popup ad una lista da cui si potra' selezionare il singolo punto che si vuole guardare.
+
+? mettere autenticazione per poter modificare solo le proprie sottomissioni? magari un servizio di notifica per quando qualcuno pubblica un'altra
+segnalazione vicina alla nostra?
+
