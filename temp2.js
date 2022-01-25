@@ -3,32 +3,52 @@ import View from 'ol/View';
 import { Draw } from 'ol/interaction';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import { Tile as TileLayer, Vector as VectorLayer, VectorImage } from 'ol/layer';
-import { get } from 'ol/proj';
+import { get, fromLonLat } from 'ol/proj';
 import { shiftKeyOnly, click } from 'ol/events/condition'
 import { Select } from 'ol/interaction';
 import { Style, Fill, Stroke, Circle } from 'ol/style';
-import {Point} from 'ol/geom';
-import {Feature} from 'ol/index';
+import { Point } from 'ol/geom';
+import { Feature } from 'ol/index';
 
+const getFeatures = async () => {
+    let response = await fetch("http://localhost:3000/features");
+    if (response.ok) {
+        let featuresFromDB = await response.json();
+        let newFeatures = featuresFromDB.results.map(db_feature => new Feature(new Point([db_feature.x, db_feature.y])));
+        return newFeatures;
+        // let featureCoords =  featuresFromDB.features
+
+    } else {
+        console.log('response was not ok')
+        console.log(response);
+    }
+}
+// need to invert the coordinates order when copying from gmaps and also call fromLonLat since openlayers uses mercator
+let milanCoordinates = fromLonLat([
+    9.183224, 45.474510
+]);
 let featuresCoordinates = [
-  [
-    -9385649.962617075,
-    4461394.138945856
-  ],
-  [
-    -9962902.400226727,
-    4608153.233253395
-  ],
-  [
-    -10011822.098329239,
-    4021116.8560232413
-  ]
+    milanCoordinates,
+    [
+        -9962902.400226727,
+        4608153.233253395
+    ],
+    [
+        -10011822.098329239,
+        4021116.8560232413
+    ]
 ];
 let features = featuresCoordinates.map(coordinates => new Feature(new Point(coordinates)));
 let points = featuresCoordinates.map(coordinates => new Point(coordinates));
 const source = new VectorSource({
-	features: features,
+    features: features,
 });
+const addFeatures = async (source) => {
+    let newFeatures = await getFeatures();
+    console.log(newFeatures);
+    source.addFeatures(newFeatures);
+}
+addFeatures(source);
 const tile = new TileLayer({
     source: new OSM()
 })
@@ -60,8 +80,8 @@ let map = new Map({
     layers: [tile, vector],
     target: 'map',
     view: new View({
-        center: [-11000000, 4600000],
-        zoom: 4,
+        center: milanCoordinates,
+        zoom: 6,
     }),
 })
 let draw = new Draw({
@@ -78,7 +98,7 @@ let select = new Select({
 map.addInteraction(select);
 select.on('select', (e) => {
     console.log(source.getFeatures());
-	let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
-	console.log(coordinates);
+    let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
+    console.log(coordinates);
     console.log(e)
 });
