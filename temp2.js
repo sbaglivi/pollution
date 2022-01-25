@@ -7,7 +7,28 @@ import { get } from 'ol/proj';
 import { shiftKeyOnly, click } from 'ol/events/condition'
 import { Select } from 'ol/interaction';
 import { Style, Fill, Stroke, Circle } from 'ol/style';
-const source = new VectorSource();
+import {Point} from 'ol/geom';
+import {Feature} from 'ol/index';
+
+let featuresCoordinates = [
+  [
+    -9385649.962617075,
+    4461394.138945856
+  ],
+  [
+    -9962902.400226727,
+    4608153.233253395
+  ],
+  [
+    -10011822.098329239,
+    4021116.8560232413
+  ]
+];
+let features = featuresCoordinates.map(coordinates => new Feature(new Point(coordinates)));
+let points = featuresCoordinates.map(coordinates => new Point(coordinates));
+const source = new VectorSource({
+	features: features,
+});
 const tile = new TileLayer({
     source: new OSM()
 })
@@ -32,7 +53,7 @@ let vectorLayerStyle = new Style({
 })
 const vector = new VectorImage({
     source: source,
-    style: vectorLayerStyle
+    style: vectorLayerStyle,
 });
 
 let map = new Map({
@@ -56,6 +77,8 @@ let select = new Select({
 })
 map.addInteraction(select);
 select.on('select', (e) => {
-    console.log(source.getFeatures())
+    console.log(source.getFeatures());
+	let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
+	console.log(coordinates);
     console.log(e)
 });
