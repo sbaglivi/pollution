@@ -10,6 +10,7 @@ import { Style, Fill, Stroke, Circle } from 'ol/style';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol/index';
 import { Overlay } from 'ol';
+import { Control , defaults as defaultControls} from 'ol/control'
 // import Geocoder from 'ol-geocoder';
 
 const getFeatures = async () => {
@@ -77,6 +78,10 @@ const vector = new VectorImage({
     source: source,
     style: vectorLayerStyle,
 });
+var searchControl = new Control({
+    element: document.getElementById('search')
+})
+// map.addControl(searchControl);
 
 let map = new Map({
     layers: [tile, vector],
@@ -85,6 +90,7 @@ let map = new Map({
         center: milanCoordinates,
         zoom: 6,
     }),
+    controls: defaultControls().extend([searchControl]),
 })
 let draw = new Draw({
     source: source,

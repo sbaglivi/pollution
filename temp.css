@@ -17,3 +17,28 @@
   padding: 8px;
   border: 1px solid black;
 }
+#search {
+  position: absolute;
+  top: 65px;
+  left: .5em;
+  padding: 0px;
+  display: block;
+
+}
+#search form {
+  height: 24px;
+}
+#search input {
+  line-height: 20px;
+}
+.searchButton {
+  display: inline-block !important;
+  width: auto !important;
+  height: 100%;
+  background-color: rgba(0,60,136,0.5);
+  color: white;
+  font-weight: bold;
+}
+.searchButton:hover {
+  background-color: rgba(0,60,136,0.7);
+}

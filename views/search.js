@@ -36,3 +36,13 @@ const htmlFromResults = (results) => {
     })
     return htmlList;
 }
+
+/*
+To get current position from user
+navigator.geolocation.getCurrentPosition(successFun, errorFun, options);
+successFun example:
+const logCoordinates = (position) => {
+    console.log(`[${position.coords.latitude}, ${position.coords.longitude}]`)
+    console.log(`Accuracy: ${position.coords.accuracy} meters`);
+}
+*/
