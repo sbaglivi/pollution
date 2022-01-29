@@ -7,11 +7,35 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 let connection = mysql.createConnection({
     host: 'localhost',
     user: 'simone',
     password: 'enomis',
     database: 'pollution'
+})
+passport.use(new LocalStrategy(function verify(username, password, cb) {
+    connection.query("SELECT * FROM users WHERE username = ?", [username], (err, results, fields) => {
+        if (err) return cb(err)
+        if (results.length !== 1) return cb(null, false, { message: 'Username returned 0 or more than 1 row' });
+
+        bcrypt.compare(password, results[0].hash, (err, result) => {
+            if (err) return cbb(err);
+            if (!result) return cb(null, false, { message: 'The password is incorrect' })
+            return cb(null, results[0]);
+        })
+    })
+}))
+passport.serializeUser(function (user, cb) {
+    cb(null, { id: user.id })
+})
+passport.deserializeUser(function (user, cb) {
+    connection.query("SELECT * FROM users WHERE id = ?", [user.id], (err, results, fields) => {
+        if (err) cb(err);
+        if (results.length !== 1) cb(null, false, { message: 'More than 1 user found with given username' })
+        cb(null, results[0]);
+    })
 })
 const SALT_ROUNDS = 10;
 const UPLOADS_DIR = 'uploads/';
@@ -25,11 +49,13 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
 })
-// import { makeDirectoryIfNotExists } from "../functions";
+// import { makeDirectoryIfNotExists } from "../functions.mjs";
+// Basically I found support for imports in nodejs but you can't really mix imports and requires so I think it's just better to stick with require for now
+const helpers = require("../functions");
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get("/", (req, res) => {
-    res.render("home");
+    res.render("home", { user: req.user });
 });
 router.get("/features", (req, res) => {
     connection.query("SELECT * FROM features", (err, results, fields) => {
@@ -47,8 +73,7 @@ router.route('/upload')
 
         const { filename: fileName } = req.file;
 
-        // THIS NEEDS TO BE FIXED SAYS CANT USE IMPORT OUTSIDE A MODULE
-        // makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
+        helpers.makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
         await sharp(req.file.path)
             .resize(200, 200)
             .jpeg({ quality: 90 })
@@ -112,7 +137,11 @@ router.route("/register")
                     if (err) throw err;
                     if (results.affectedRows === 1) {//  Success!
                         console.log('User correctly registered');
-                        res.redirect('/login');
+                        let user = { id: results.insertId, username: username }
+                        req.login(user, function (err) {
+                            if (err) return next(err);
+                            res.redirect('/');
+                        })
                     } else {
                         // Something went wrong since either none or multiple rows were affected by the insert
                         console.log(results)
@@ -126,20 +155,25 @@ router.route('/login')
     .get((req, res) => {
         res.render('login');
     })
-    .post((req, res) => {
-        // Check if login is successful
-        let username = req.body.username;
-        let password = req.body.password;
-        connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results, fields) => {
-            if (err) throw err;
-            if (results.length !== 1) console.log(`Userame: ${username} returned more than 1 row`)
-            bcrypt.compare(password, results[0].hash, (err, result) => {
-                if (result) console.log('Congratulations, the password is correct!');
-                else console.log('The password is not correct');
-            })
-        })
+    .post(passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureMessage: true })) //, (req, res) => {
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/login')
+})
+// Check if login is successful
+//         let username = req.body.username;
+// let password = req.body.password;
+// connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results, fields) => {
+//     if (err) throw err;
+//     if (results.length !== 1) console.log(`Userame: ${username} returned more than 1 row`)
+//     bcrypt.compare(password, results[0].hash, (err, result) => {
+//         if (result) console.log('Congratulations, the password is correct!');
+//         else console.log('The password is not correct');
+//     })
+// })
 
-    })
+
+// })
 /*
 router.get("/submit", (req, res) => {
 res.render("submit");
