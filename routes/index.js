@@ -57,6 +57,9 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get("/", (req, res) => {
     res.render("home", { user: req.user });
 });
+router.get('/map', (req, res) => {
+    res.render('temp');
+})
 router.get("/features", (req, res) => {
     connection.query("SELECT * FROM features", (err, results, fields) => {
         if (err) throw err;

@@ -1,13 +1,33 @@
-@import "node_modules/ol/ol.css";
+@import "ol.css";
 
 * {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
 }
+body {
+  min-height: 100vh;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .map {
-  height: 100vh;
-  width: 100vw;
+  flex: 1 0 500px;
+}
+.navbar {
+  flex: 0 0 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: rgb(43, 44, 49);
+  color: white;
+}
+.navbar-links li {
+  display: inline-block;
+}
+.navbar-links a {
+  color: white;
 }
 #popup {
   display: none;
@@ -20,10 +40,9 @@
 #search {
   position: absolute;
   top: 65px;
-  left: .5em;
+  left: 0.5em;
   padding: 0px;
   display: block;
-
 }
 #search form {
   height: 24px;
@@ -35,10 +54,10 @@
   display: inline-block !important;
   width: auto !important;
   height: 100%;
-  background-color: rgba(0,60,136,0.5);
+  background-color: rgba(0, 60, 136, 0.5);
   color: white;
   font-weight: bold;
 }
 .searchButton:hover {
-  background-color: rgba(0,60,136,0.7);
+  background-color: rgba(0, 60, 136, 0.7);
 }
