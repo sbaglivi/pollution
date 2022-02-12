@@ -1,10 +1,5 @@
 const express = require("express");
 const app = express();
-const NodeGeocoder = require("node-geocoder");
-const options = {
-  provider: "openstreetmap",
-}
-const geocoder = NodeGeocoder(options);
 const routes = require('./routes');
 const passport = require('passport');
 //  END OF REQUIRE STATEMENTS

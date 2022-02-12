@@ -6,14 +6,53 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signal</title>
+    <link href="css/submit.css" rel="stylesheet">
+    <script src="js/submit.js" defer></script>
 </head>
 
 <body>
-    <form method="POST" action="/submit">
-        <input type="text" placeholder="Title" required>
-        <input type="file" name="picture" accept="image/png, image/jpeg">
-        <button>Signal</button>
-    </form>
+    <div class="formDiv">
+
+        <div class="detailsDiv">
+            <h2>What happened:</h2>
+            <div class="titleDiv">
+                <label for="name">Title</label>
+                <input name="name" type="text" placeholder="Title" required>
+            </div>
+            <div class="descriptionDiv">
+                <label for="description">Description (optional)</label>
+                <textarea rows="8" name="description" placeholder="Describe what was going on"></textarea>
+            </div>
+            <div class="pictureDiv">
+                <label for="picture">Upload a picure</label>
+                <input type="file" id="imageInput" name="picture" accept="image/png, image/jpeg">
+                <img src="#" id="imagePreview" alt="upload preview" hidden>
+            </div>
+        </div>
+        <!-- get the coordinates -->
+        <div class="coordinatesFormDiv">
+            <h2>Where did it happen:</h2>
+            <div class="geocodingDiv">
+                <p>Search for an address:</p>
+                <form class="geocodingForm" method="get" action="/">
+                    <input type="text" name="address" placeholder='Search for an address'>
+                    <button>Search</buttoN>
+                </form>
+                    <div class="geocodingResultsDiv"></div>
+            </div>
+            <div class="latitudeAndLongitudeDiv">
+                <p>Insert coordinates yourself:</p>
+                <input id="latitude" type="number" placeholder="latitude" name="latitude">
+                <input id="longitude" type="number" placeholder="longitude" name="longitude">
+            </div>
+            <div class="gpsDiv">
+                <p>Or use the current position from your device gps:</p>
+                <button id="gpsButton">Use GPS</button>
+                <div class="gpsResultsDiv"></div>
+            </div>
+        </div>
+        <button>Submit</button>
+    </div>
 
 </body>
 

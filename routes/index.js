@@ -9,6 +9,11 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const NodeGeocoder = require("node-geocoder");
+const options = {
+  provider: "openstreetmap",
+}
+const geocoder = NodeGeocoder(options);
 let connection = mysql.createConnection({
     host: 'localhost',
     user: 'simone',
@@ -54,11 +59,15 @@ const upload = multer({
 const helpers = require("../functions");
 router.use(bodyParser.urlencoded({ extended: true }));
 
+// Views Routes
 router.get("/", (req, res) => {
     res.render("home", { user: req.user });
 });
 router.get('/map', (req, res) => {
     res.render('temp');
+})
+router.get('/table', (req,res)=>{
+    res.render('table');
 })
 router.get("/features", (req, res) => {
     connection.query("SELECT * FROM features", (err, results, fields) => {
