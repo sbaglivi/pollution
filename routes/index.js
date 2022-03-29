@@ -11,7 +11,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const NodeGeocoder = require("node-geocoder");
 const options = {
-  provider: "openstreetmap",
+    provider: "openstreetmap",
 }
 const geocoder = NodeGeocoder(options);
 let connection = mysql.createConnection({
@@ -48,6 +48,7 @@ const RESIZED_DIR = 'resized';
 const storage = multer.diskStorage({
     destination: UPLOADS_DIR,
     filename: (req, file, cb) => {
+        // I wanted to use req.body.filename here to use the final name but apparently multer doesn't process that data until after the file has been saved, I'll have to rename it afterwards.
         cb(null, file.fieldname + Date.now());
     }
 })
@@ -59,14 +60,15 @@ const upload = multer({
 const helpers = require("../functions");
 router.use(bodyParser.urlencoded({ extended: true }));
 
+
 // Views Routes
 router.get("/", (req, res) => {
     res.render("home", { user: req.user });
 });
 router.get('/map', (req, res) => {
-    res.render('temp');
+    res.render('temp', { user: req.user });
 })
-router.get('/table', (req,res)=>{
+router.get('/table', (req, res) => {
     res.render('table');
 })
 router.get("/features", (req, res) => {
@@ -81,16 +83,18 @@ router.route('/upload')
     .get((req, res) => {
         res.render('upload');
     })
-    .post(upload.single('evidence'), async (req, res, next) => {
+    .post(upload.single('picture'), async (req, res, next) => {
 
         const { filename: fileName } = req.file;
+        console.log(req.file.path)
+        console.log(`requested filename is ${req.body.name}`);
 
         helpers.makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
         await sharp(req.file.path)
             .resize(200, 200)
             .jpeg({ quality: 90 })
             .toFile(
-                path.resolve(UPLOADS_DIR, RESIZED_DIR, req.file.filename)
+                path.resolve(UPLOADS_DIR, RESIZED_DIR, req.body.name + Date.now())
             )
         fs.unlinkSync(req.file.path);
         res.redirect('/upload');
@@ -120,10 +124,42 @@ router.get('/geocode/:data', async (req, res) => {
     res.status(200).send({ results: results });
 })
 router.route("/submit")
-    .get((req, res) => {
+    .get(helpers.isLoggedIn, (req, res) => {
         res.render("submit");
     })
-    .post((req, res) => {
+    .post(helpers.isLoggedIn, upload.single('picture'), async (req, res, next) => {
+
+        // const { filename: fileName } = req.file;
+        // console.log(req.file.path)
+        let imageName = req.body.name + Date.now();
+        imageName = imageName.replace(/\s+/g, '_').toLowerCase();
+        try {
+            helpers.makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
+            await sharp(req.file.path)
+                .resize(200, 200)
+                .jpeg({ quality: 90 })
+                .toFile(
+                    path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName)
+                )
+            fs.unlinkSync(req.file.path);
+        } catch (e) {
+            res.send('There was an error while saving the image: ' + e.message);
+        }
+        let today = new Date();
+        let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        let description = req.body.description || "";
+        let author = req.user.username;
+        let hideAuthor = req.body.hideAuthor === 'true';
+        try {
+            connection.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                [req.body.latitude, req.body.longitude, req.body.name, imageName, author, description, hideAuthor, date])
+        } catch (e) {
+            res.send(`Error while trying to save the data in the database:\n${e.message}`);
+        }
+        res.redirect('/submit')
+
+    })
+    .post(helpers.isLoggedIn, (req, res) => {
         // Handle submit
     })
 router.route("/register")

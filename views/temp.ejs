@@ -13,8 +13,15 @@
         <h1>Pollution Tracker</h1>
         <ul class="navbar-links">
             <li><a href="/table">Table View</a></li>
-            <li><a href="#">Login</a></li>
-            <li><a href="#">Sign up</a></li>
+            <% if (user) { %>
+                <li></li>
+                Welcome back, <%=user.username%>
+                    </li>
+                    <li><a href="/logout">Logout</a></li>
+                    <% } else { %>
+                        <li><a href="/login">Login</a></li>
+                        <li><a href="/register">Sign up</a></li>
+                        <% } %>
         </ul>
     </div>
     <div id="map" class="map"></div>
