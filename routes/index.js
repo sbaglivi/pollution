@@ -203,7 +203,10 @@ router.route('/login')
     .get((req, res) => {
         res.render('login');
     })
-    .post(passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureMessage: true })) //, (req, res) => {
+    .post(passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }), (req,res)=>{
+        res.redirect(req.session.returnTo || '/');
+        delete req.session.returnTo;
+    }) //, (req, res) => {
 router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/login')
