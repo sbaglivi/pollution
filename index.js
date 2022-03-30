@@ -5,7 +5,8 @@ const passport = require('passport');
 //  END OF REQUIRE STATEMENTS
 
 app.use(express.static('views'));
-app.use(express.static('assets'))
+app.use(express.static('assets'));
+app.use(express.static('uploads'));
 app.use(express.static('/'))
 app.set("view engine", "ejs");
 

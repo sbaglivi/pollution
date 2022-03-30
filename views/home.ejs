@@ -16,6 +16,21 @@
         <%=user.username%>
     </p>
     <% } %>
+      <ul>
+        <% submissions.forEach(submission=>{ %>
+          <li>
+            <a href="/submissions/<%=submission.id%>">
+              <h1>
+                <%=submission.name%>
+              </h1>
+            </a>
+            <% if (!submission.hide_author) { %>
+              <p>Submitted by: <%= submission.author %>
+              </p>
+              <% } %>
+          </li>
+          <% }) %>
+      </ul>
 </body>
 
 </html>

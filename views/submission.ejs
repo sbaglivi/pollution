@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>
+        <%=submission.name%>
+    </h1>
+    <% if (!submission.hide_author) { %>
+        <h2>by <%=submission.author%>
+        </h2>
+        <% } %>
+            <h2>Submitted on: <%=submission.submission_date%>
+            </h2>
+            <!-- <img src="goku.jpg"> -->
+            <!-- I think without the initial slash express takes the current web page path (submissions/whateverid) and then adds the file name at the end like submission/whateverid/filename or submissions/filename that obv does not find anything that matches. -->
+            <!-- Without the intial / it doesn't even find it if I put it in the same folder -->
+            <!--  Without the initial / it doesn't work, probably because it interprets that as looking in the same folder as this file is -->
+            <!-- When I use / it instead interprets it as a root request and then express intervenes -->
+            <img src="/resized/<%=submission.image_name%>">
+            <p>
+                <%=submission.description%>
+            </p>
+</body>
+
+</html>

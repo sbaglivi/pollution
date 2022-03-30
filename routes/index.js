@@ -63,7 +63,10 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 // Views Routes
 router.get("/", (req, res) => {
-    res.render("home", { user: req.user });
+    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
+        if (err) throw err;
+        res.render("home", { user: req.user, submissions: results });
+    })
 });
 router.get('/map', (req, res) => {
     res.render('temp', { user: req.user });
@@ -75,6 +78,13 @@ router.get("/features", (req, res) => {
     connection.query("SELECT * FROM features", (err, results, fields) => {
         if (err) throw err;
         // console.log(results);
+        res.set('Access-Control-Allow-Origin', '*');
+        res.status(200).send({ results: results });
+    })
+})
+router.get('/pollution_sites', (req, res) => {
+    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
+        if (err) throw err;
         res.set('Access-Control-Allow-Origin', '*');
         res.status(200).send({ results: results });
     })
@@ -162,6 +172,22 @@ router.route("/submit")
     .post(helpers.isLoggedIn, (req, res) => {
         // Handle submit
     })
+router.get('/submissions/:id', (req, res) => {
+    connection.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id], (err, results, fields) => {
+        if (err) throw err;
+        if (results.length !== 1) {
+            console.log(`Found more than a single instance of submissions with id ${req.params.id}`);
+            console.log(req.originalUrl)
+        }
+        console.log(Object.keys(results[0].submission_date))
+        for (let key in results[0].submission_date) {
+            console.log(`${key} - ${results[0].submission_date[key]}`);
+        }
+        let date = new Date(results[0].submission_date);
+        results[0].submission_date = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+        res.render('submission', { submission: results[0] })
+    })
+})
 router.route("/register")
     .get((req, res) => {
         res.render('register');
@@ -203,7 +229,7 @@ router.route('/login')
     .get((req, res) => {
         res.render('login');
     })
-    .post(passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }), (req,res)=>{
+    .post(passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }), (req, res) => {
         res.redirect(req.session.returnTo || '/');
         delete req.session.returnTo;
     }) //, (req, res) => {
@@ -237,6 +263,7 @@ router.get("/pollution", (req, res) => {
     // shows a map with points wherever pollution has been signaled.
 })
 router.get("*", (req, res) => {
+    console.log(req.originalUrl);
     res.send("You've reached a dead end");
 });
 module.exports = router;

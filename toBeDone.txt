@@ -1,0 +1,28 @@
+On submit I need to:
+- Validate the data?
+- if everything necessary is there then I input part of the data in the database
+- and I save the image in a folder, I'll just put the image name in the database.
+
+Right now the fields are:
+- title -> varchar - maybe 50 or so
+- picture (will be title only) -> varchar 50 or so, need to come up with a simple idea on how to create its name
+- coordinates -> 2 floats
+- maybe an author field? varchar 50 or whatever. -> I'll give the choice to whoever submits it to opt out of showing his/her name.
+- maybe a submission date? date.
+
+
+I need to create the filename properly, check that it isnt taken. 
+Think the easiest way is to keep doing what I'm doing and just substitute to the current field the title of the post itself. Unless 2 people submit
+something with the same title in the same second that should be unique albeit probably a bit overkill and not human readable.
+seems that multer first sends the file data, doesn't have req.body data until later on. I'll just have to use a temp name until I resize the image and 
+after that I can use req.body to rename it to whatever I want.
+
+
+
+submit needs a check that a user is login when visited and when trying to submit
+
+Notes:
+I'm still not quite sure of how express static works. What I've understood is that you design certain folders in which express will look for files that match what you're searching for.
+If you don't start a path with '/' then express I think prefixes your request with the path of the file you're at / who's making the request.
+File requests are handled pretty much in the same way as you would handle a normal page request, it just preloads the available file paths from files in the express.static folders.
+I would really like to understand: if there is a way to use relative paths as well when it's useful / comfortable, if there is some sort of development mode where I can trace the requests that the server receives for files to check where it's looking for them.

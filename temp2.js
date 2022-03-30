@@ -17,24 +17,23 @@ import { Control, defaults as defaultControls } from 'ol/control'
 let milanCoordinates = fromLonLat([
     9.183224, 45.474510
 ]);
-let featuresCoordinates = [
-    milanCoordinates,
-    [
-        -9962902.400226727,
-        4608153.233253395
-    ],
-    [
-        -10011822.098329239,
-        4021116.8560232413
-    ]
-];
 // mapping manual data to features which are themselves point objects.
-let features = featuresCoordinates.map(coordinates => new Feature(new Point(coordinates)));
 // creating the vector layer and already feeding it the features I created from the db data
 const source = new VectorSource({
-    features: features,
+    // features: features,
 });
 // gets features from api
+let pollution_sites;
+const getPollutionSites = async () => {
+    let response = await fetch("http://localhost:3000/pollution_sites")
+    if (response.ok) {
+        pollution_sites = (await response.json()).results;
+        console.log(pollution_sites)
+        console.log('Just printed the pollution sites')
+        let newFeatures = pollution_sites.map(db_feature => new Feature(new Point(fromLonLat([db_feature.longitude, db_feature.latitude]))));
+        return newFeatures;
+    }
+}
 const getFeatures = async () => {
     let response = await fetch("http://localhost:3000/features");
     if (response.ok) {
@@ -49,7 +48,8 @@ const getFeatures = async () => {
 }
 // create a function that uses the data from the api to add features to source after it has been created
 const addFeatures = async (source) => {
-    let newFeatures = await getFeatures();
+    // let newFeatures = await getFeatures();
+    let newFeatures = await getPollutionSites();
     console.log(newFeatures);
     source.addFeatures(newFeatures);
 }
@@ -84,7 +84,7 @@ let map = new Map({
     target: 'map',
     view: new View({
         center: milanCoordinates,
-        zoom: 6,
+        zoom: 3,
     }),
 })
 
@@ -124,6 +124,7 @@ let select = new Select({
     style: new Style({ image: selectedImageStyle }),
 })
 map.addInteraction(select);
+const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 select.on('select', (e) => {
     let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
     // console.log(source.getFeatures());
@@ -145,7 +146,17 @@ select.on('select', (e) => {
     }
     const coords = coordinatesFromFeature(e.selected[0]);
     popup.setPosition(coords);
-    elem.textContent = `You clicked on ${coords}`;
+    let pollution_site = pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), coords));
+    pollution_sites.forEach(site => {
+        let lonlat = fromLonLat([site.longitude, site.latitude]);
+        console.log(lonlat);
+        console.log(checkArraysEqual(lonlat, coords));
+
+
+    })
+    console.log('point coordinates instead are')
+    console.log(coords);
+    elem.textContent = `You clicked on ${coords}, ${pollution_site[0].name}`;
     elem.style.display = "block";
 });
 
