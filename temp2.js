@@ -126,6 +126,7 @@ let select = new Select({
 map.addInteraction(select);
 const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 select.on('select', (e) => {
+    // e.stopPropagation();
     let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
     // console.log(source.getFeatures());
     // console.log(coordinates);
@@ -169,9 +170,13 @@ let popup = new Overlay({
     element: document.getElementById('popup')
 })
 map.addOverlay(popup);
-map.on('click', () => {
+map.on('click', e => {
+    e.stopPropagation();
     let element = popup.getElement();
     element.style.display = "none";
+    console.log('click on map')
+    console.log(e)
+    console.log('done printing map click e')
     // I need click coordinates. I might need to hide the last popup but maybe I can just move it and overwrite the content. I do need to remove 
     // the selection effect though. The selected item seemed to deselect itself automatically though, not sure how? need to test
 })

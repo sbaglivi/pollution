@@ -10,3 +10,7 @@ se si clicca su un indicatore multiplo invece si espandera' il popup ad una list
 ? mettere autenticazione per poter modificare solo le proprie sottomissioni? magari un servizio di notifica per quando qualcuno pubblica un'altra
 segnalazione vicina alla nostra?
 
+Al momento devo capire come differenziare un click per selezionare da un click sulla mappa.
+Voglio anche aggiungere un bottone per chiudere popup al popup stesso.
+click sulla mappa dovrebbe avere al suo interno: coordinate, x per chiudere, link per segnalare in quelle coordinate.
+(il click sulla mappa deve anche creare una feature?)
