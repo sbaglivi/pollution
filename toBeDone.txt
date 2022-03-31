@@ -26,3 +26,9 @@ I'm still not quite sure of how express static works. What I've understood is th
 If you don't start a path with '/' then express I think prefixes your request with the path of the file you're at / who's making the request.
 File requests are handled pretty much in the same way as you would handle a normal page request, it just preloads the available file paths from files in the express.static folders.
 I would really like to understand: if there is a way to use relative paths as well when it's useful / comfortable, if there is some sort of development mode where I can trace the requests that the server receives for files to check where it's looking for them.
+
+Some useful links as reference for the changes I've done / I'm doing to the openlayers map:
+https://stackoverflow.com/questions/26391195/adding-event-handler-to-feature-in-openlayers-3
+https://openlayers.org/en/latest/examples/icon.html
+https://openlayers.org/en/latest/examples/select-features.html
+https://openlayers.org/en/latest/examples/select-multiple-features.html
