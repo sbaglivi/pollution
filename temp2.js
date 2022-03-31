@@ -172,6 +172,8 @@ map.addOverlay(popup);
 map.on('click', () => {
     let element = popup.getElement();
     element.style.display = "none";
+    // I need click coordinates. I might need to hide the last popup but maybe I can just move it and overwrite the content. I do need to remove 
+    // the selection effect though. The selected item seemed to deselect itself automatically though, not sure how? need to test
 })
 let createPopup = () => {
 
