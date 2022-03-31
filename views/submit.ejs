@@ -43,8 +43,10 @@
                 </div>
                 <div class="latitudeAndLongitudeDiv">
                     <p>Insert coordinates yourself:</p>
-                    <input id="latitude" type="number" step="any" placeholder="latitude" name="latitude">
-                    <input id="longitude" type="number" step="any" placeholder="longitude" name="longitude">
+                    <input id="latitude" type="number" step="any" placeholder="latitude" name="latitude"
+                        value="<%=lat | ''%>">
+                    <input id="longitude" type="number" step="any" placeholder="longitude" name="longitude"
+                        value="<%=lon | ''%>">
                 </div>
                 <div class="gpsDiv">
                     <p>Or use the current position from your device gps:</p>

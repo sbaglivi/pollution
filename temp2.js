@@ -3,7 +3,7 @@ import View from 'ol/View';
 import { Draw } from 'ol/interaction';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import { Tile as TileLayer, Vector as VectorLayer, VectorImage } from 'ol/layer';
-import { get, fromLonLat } from 'ol/proj';
+import { get, fromLonLat, toLonLat } from 'ol/proj';
 import { shiftKeyOnly, click } from 'ol/events/condition'
 import { Select } from 'ol/interaction';
 import { Style, Fill, Stroke, Circle, Icon } from 'ol/style';
@@ -67,13 +67,13 @@ let imageStyle = new Circle({
     radius: 6,
     stroke: strokeStyle
 })
-let vectorLayerStyle = new Style({
+let unselectedStyle = new Style({
     image: imageStyle
 })
 // Creating the vector Image by combining the vector layer with some styles.
 const vector = new VectorImage({
     source: source,
-    style: vectorLayerStyle,
+    style: unselectedStyle,
 });
 // Creating the tile layer
 const tile = new TileLayer({
@@ -108,23 +108,31 @@ const iconStyle = new Style({
 
 // Select interaction, not even sure if it has a point. The only interaction I want to have is the ability to click and open a relative popup. Max popup opens should be 1, when popup is open 
 // the point look should change so maybe I do need to have a select interaction. Limit should be 1 and is not right now
-let selectedImageStyle = new Circle({
+let selectedImage = new Circle({
     fill: new Fill({
         color: [80, 200, 100, 1],
     }),
     radius: 8,
     stroke: strokeStyle
 })
+let selectedStyle = new Style({
+    image: selectedImage
+})
+const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+let popup = new Overlay({
+    element: document.getElementById('popup')
+})
+map.addOverlay(popup);
+/*
 let select = new Select({
     layers: [vector],
     // addCondition: (browserEvent) => {
     //     return shiftKeyOnly(browserEvent) && click(browserEvent)
     // },
     // removeCondition: (browserEvent) => click(browserEvent),
-    style: new Style({ image: selectedImageStyle }),
+    style: selectedStyle,
 })
 map.addInteraction(select);
-const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 select.on('select', (e) => {
     // e.stopPropagation();
     let coordinates = source.getFeatures().map(feature => feature.getGeometry().getCoordinates());
@@ -166,10 +174,6 @@ let coordinatesFromFeature = (feature) => {
     return feature.getGeometry().getCoordinates();
     // return [feature.geometry.x, feature.geometry.y];
 }
-let popup = new Overlay({
-    element: document.getElementById('popup')
-})
-map.addOverlay(popup);
 map.on('click', e => {
     e.stopPropagation();
     let element = popup.getElement();
@@ -180,9 +184,62 @@ map.on('click', e => {
     // I need click coordinates. I might need to hide the last popup but maybe I can just move it and overwrite the content. I do need to remove 
     // the selection effect though. The selected item seemed to deselect itself automatically though, not sure how? need to test
 })
-let createPopup = () => {
+*/
+let currentSelection = null;
+// need a normal style and a selected style, when I click on a new point I remove the selected style from old selection, update selection pointer and apply new style to clicked item.
+// In theory there should be 3 possible states before a click: feature selected / popup open outside of a feature / nothing. 
+map.on('singleclick', e => {
+    let element = popup.getElement();
+    console.log(element) // DEBUGGING
+    if (currentSelection !== null) {
+        if (currentSelection !== 'popup') {
+            // unselect feature
+            console.log(currentSelection); // DEBUGGING
+            currentSelection.setStyle(unselectedStyle);
+        }
+        // hide popup: think this has to happen both if previously a feature was selected or normal popup, even when feature is selected I want a popup to be shown.
+        element.style.display = 'none';
+        currentSelection = null;
+    }
+    let feature = map.forEachFeatureAtPixel(e.pixel, f => {
+        return f;
+    })
+    let coords = null;
+    if (feature) {
+        console.log(feature);
+        console.log('just printed the feature') // DEBUGGING
+        currentSelection = feature;
+        feature.setStyle(selectedStyle);
+        // create popup
+        coords = feature.getGeometry().getCoordinates();
+        let pollution_site = pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), coords));
+        element.textContent = `You clicked on the feature at ${coords}\n${pollution_site.length > 0 ? pollution_site[0].name : "Could not retrieve title"}`
+    } else {
+        coords = e.coordinate;
+        let [lon, lat] = toLonLat(coords);
+        currentSelection = 'popup' // seems shit 
+        element.textContent = `You clicked at [${lat.toFixed(5)},${lon.toFixed(5)}]` // testing on google maps even 4 digits seems to be plenty for most applications
+        let submitLink = document.createElement('a');
+        submitLink.textContent = 'Signal an event that happened here'
+        submitLink.href = `localhost:3000/submitFromMap/${lat},${lon}`
+        submitLink.style.display = 'inline-block'
+        element.append(submitLink);
 
-}
+    }
+    popup.setPosition(coords);
+    element.style.display = 'block';
+
+
+})
+
+
+
+
+
+
+
+
+
 // /* Geocoding if it finishes installing
 // var geocoder = new Geocoder('nominatim', {
 //     provider: 'mapquest',

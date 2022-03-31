@@ -133,9 +133,10 @@ router.get('/geocode/:data', async (req, res) => {
     let results = await geocoder.geocode(req.params.data);
     res.status(200).send({ results: results });
 })
-router.route("/submit")
+router.route("/submit/:latlon?")
     .get(helpers.isLoggedIn, (req, res) => {
-        res.render("submit");
+        [lat, lon] = req.params.latlon.split(',') || ['', ''];
+        res.render("submit", { lat: lat, lon: lon });
     })
     .post(helpers.isLoggedIn, upload.single('picture'), async (req, res, next) => {
 
