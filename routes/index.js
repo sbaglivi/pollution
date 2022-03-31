@@ -135,7 +135,18 @@ router.get('/geocode/:data', async (req, res) => {
 })
 router.route("/submit/:latlon?")
     .get(helpers.isLoggedIn, (req, res) => {
-        [lat, lon] = req.params.latlon.split(',') || ['', ''];
+        [lat, lon] = ['', ''];
+        // This should prevent the route from breaking but ideally rather than logging the problem in the server console I'd want to have a toast notification on the user end to explain the issue.
+        if (req.params.latlon) {
+            try {
+                let latlontext = req.params.latlon.split(',');
+                [lat, lon] = latlontext.map(x => parseFloat(x));
+                if ([lat, lon].some(val => Number.isNaN(val) || val === undefined)) throw Error("Got NaN or undefined while trying to parse given coordinates");
+            } catch (e) {
+                console.log(`Error while trying to parse ${req.params.latlon} as [lat,lon] coordinates`)
+                console.error(e.message);
+            }
+        }
         res.render("submit", { lat: lat, lon: lon });
     })
     .post(helpers.isLoggedIn, upload.single('picture'), async (req, res, next) => {

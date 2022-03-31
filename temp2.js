@@ -221,7 +221,7 @@ map.on('singleclick', e => {
         element.textContent = `You clicked at [${lat.toFixed(5)},${lon.toFixed(5)}]` // testing on google maps even 4 digits seems to be plenty for most applications
         let submitLink = document.createElement('a');
         submitLink.textContent = 'Signal an event that happened here'
-        submitLink.href = `localhost:3000/submitFromMap/${lat},${lon}`
+        submitLink.href = `http://localhost:3000/submit/${lat},${lon}`
         submitLink.style.display = 'inline-block'
         element.append(submitLink);
 

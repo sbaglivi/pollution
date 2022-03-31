@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signal</title>
-    <link href="css/submit.css" rel="stylesheet">
-    <script src="js/submit.js" defer></script>
+    <link href="/css/submit.css" rel="stylesheet">
+    <script src="/js/submit.js" defer></script>
 </head>
 
 <body>
@@ -44,9 +44,9 @@
                 <div class="latitudeAndLongitudeDiv">
                     <p>Insert coordinates yourself:</p>
                     <input id="latitude" type="number" step="any" placeholder="latitude" name="latitude"
-                        value="<%=lat | ''%>">
+                        value="<%=lat%>">
                     <input id="longitude" type="number" step="any" placeholder="longitude" name="longitude"
-                        value="<%=lon | ''%>">
+                        value="<%=lon%>">
                 </div>
                 <div class="gpsDiv">
                     <p>Or use the current position from your device gps:</p>
