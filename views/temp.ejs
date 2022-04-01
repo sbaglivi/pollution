@@ -1,29 +1,4 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <link href="css/temp.css" rel="stylesheet">
-    <script src='js/temp3.js' type="text/javascript" defer></script>
-    <title>OpenLayers example</title>
-</head>
-
-<body>
-    <div class="navbar">
-        <h1>Pollution Tracker</h1>
-        <ul class="navbar-links">
-            <li><a href="/table">Table View</a></li>
-            <% if (user) { %>
-                <li></li>
-                Welcome back, <%=user.username%>
-                    </li>
-                    <li><a href="/logout">Logout</a></li>
-                    <% } else { %>
-                        <li><a href="/login">Login</a></li>
-                        <li><a href="/register">Sign up</a></li>
-                        <% } %>
-        </ul>
-    </div>
+<%- include("partials/header", {title: "Map" , js_file: "temp3.js" , css_file: "temp.css" }) %>
     <div id="map" class="map"></div>
     <div id="popup"></div>
     <!-- <div id="search">
@@ -32,6 +7,6 @@
             <button class="searchButton">Search</button>
         </form>
     </div> -->
-</body>
+    </body>
 
-</html>
+    </html>

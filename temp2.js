@@ -188,32 +188,100 @@ map.on('click', e => {
 let currentSelection = null;
 // need a normal style and a selected style, when I click on a new point I remove the selected style from old selection, update selection pointer and apply new style to clicked item.
 // In theory there should be 3 possible states before a click: feature selected / popup open outside of a feature / nothing. 
+const createFeaturePopup = (element, sites) => {
+    for (let site of sites) {
+        let featureDiv = document.createElement('div');
+        featureDiv.classList.add('featureDiv')
+        let link = document.createElement('a');
+        let title = document.createElement('h4');
+        title.textContent = site.name;
+        link.append(title);
+        link.href = `http://localhost:3000/submissions/${site.id}`;
+        featureDiv.append(link);
+        let imgDiv = document.createElement('div');
+        imgDiv.classList.add('imgDiv');
+        let img = document.createElement('img');
+        img.src = `/resized/${site.image_name}`;
+        imgDiv.append(img);
+        featureDiv.append(imgDiv);
+        if (!site.hide_author) {
+            let by = document.createElement('p');
+            by.classList.add('author');
+            by.textContent = `by: ${site.author}`;
+            imgDiv.append(by);
+        }
+        // let lonlatcoords = document.createElement('p');
+        // lonlatcoords.textContent = `[${site.latitude}, ${site.longitude}]`;
+        // featureDiv.append(lonlatcoords);
+        let submittedOn = document.createElement('p');
+        submittedOn.classList.add('date');
+        let date = new Date(site.submission_date);
+        submittedOn.textContent = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        imgDiv.append(submittedOn);
+        element.append(featureDiv)
+    }
+}
+/* Clusters 
+Different color for feature that get selected.
+When I deselect I'll have an array of items to deselect instead of one
+For simplicity popup will open again on click point rather than on feature / middle of features.
+
+*/
 map.on('singleclick', e => {
     let element = popup.getElement();
     console.log(element) // DEBUGGING
     if (currentSelection !== null) {
         if (currentSelection !== 'popup') {
             // unselect feature
+            if (Array.isArray(currentSelection)) {
+                for (let selected of currentSelection) {
+                    selected.setStyle(unselectedStyle);
+                }
+            } else {
+                currentSelection.setStyle(unselectedStyle);
+            }
             console.log(currentSelection); // DEBUGGING
-            currentSelection.setStyle(unselectedStyle);
         }
         // hide popup: think this has to happen both if previously a feature was selected or normal popup, even when feature is selected I want a popup to be shown.
+        element.innerHTML = '';
         element.style.display = 'none';
         currentSelection = null;
     }
-    let feature = map.forEachFeatureAtPixel(e.pixel, f => {
-        return f;
+    let features = [];
+    map.forEachFeatureAtPixel(e.pixel, f => {
+        features.push(f);
     })
     let coords = null;
-    if (feature) {
-        console.log(feature);
-        console.log('just printed the feature') // DEBUGGING
-        currentSelection = feature;
-        feature.setStyle(selectedStyle);
-        // create popup
-        coords = feature.getGeometry().getCoordinates();
-        let pollution_site = pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), coords));
-        element.textContent = `You clicked on the feature at ${coords}\n${pollution_site.length > 0 ? pollution_site[0].name : "Could not retrieve title"}`
+    if (features.length > 0) {
+        console.log(features);
+        console.log('just printed the feature(s)') // DEBUGGING
+        let selected_sites;
+        if (features.length > 1) {
+            currentSelection = features;
+            // let coords = currentSelection.map(feature => feature.getGeometry().getCoordinates());
+            selected_sites = new Set();
+            for (let feature of currentSelection) {
+                feature.setStyle(selectedStyle);
+                // selected_sites.add(...pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), feature.getGeometry().getCoordinates())))
+                pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), feature.getGeometry().getCoordinates())).forEach(site => selected_sites.add(site));
+            }
+            console.log(`selected sites length before removing duplicates: ${selected_sites.size}`); // DEBUGGING
+            // selected_sites = [...new Set(selected_sites)];
+            console.log(`after: ${selected_sites.size}`); // DEBUGGING
+            // I'll probably modify this to be a set from the beginning I believe, I just want to check if it's working correctly.
+        } else {
+            currentSelection = features[0];
+            currentSelection.setStyle(selectedStyle);
+            coords = currentSelection.getGeometry().getCoordinates();
+            selected_sites = pollution_sites.filter(site => checkArraysEqual(fromLonLat([site.longitude, site.latitude]), coords));
+        }
+        // element.textContent = `You clicked on the feature at ${coords}\n${pollution_site.length > 0 ? pollution_site[0].name : "Could not retrieve title"}`
+
+        createFeaturePopup(element, selected_sites)
+        console.log(selected_sites) // DEBUGGING
+        console.log('printed selected sites')
+        // There is a bug where the popup gets positioned in a certain place but if you moved the map in the opposite direction it will be quite far away.
+
     } else {
         coords = e.coordinate;
         let [lon, lat] = toLonLat(coords);
@@ -226,7 +294,10 @@ map.on('singleclick', e => {
         element.append(submitLink);
 
     }
-    popup.setPosition(coords);
+    console.log(element) //DEBUGGING
+    popup.setPosition(e.coordinate);
+    // popup.setPosition(coords); To do it properly I'd have to understand the periodicity of the map width / longitude and adjust for that. A great simplification is to just put popup wherever the user clicks even thought it won't be perfectly centered on the feature. 
+    console.log(`event coordinates: ${e.coordinate}\ncalculated coordinates: ${coords}`)
     element.style.display = 'block';
 
 

@@ -60,7 +60,10 @@ const upload = multer({
 const helpers = require("../functions");
 router.use(bodyParser.urlencoded({ extended: true }));
 
-
+router.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+})
 // Views Routes
 router.get("/", (req, res) => {
     connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
@@ -75,7 +78,7 @@ router.get('/table', (req, res) => {
     res.render('table');
 })
 router.get("/features", (req, res) => {
-    connection.query("SELECT * FROM features", (err, results, fields) => {
+    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
         if (err) throw err;
         // console.log(results);
         res.set('Access-Control-Allow-Origin', '*');
