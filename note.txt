@@ -31,3 +31,7 @@ if y-direction !== bottom:
     y-position = clickY - yoffset;
 newCoordinates = getCoordinatesFromPixel(x-position, y-position)
 setPosition(newCoordinates);
+
+useful link for reference https://stackoverflow.com/questions/34209971/popover-overlay-in-openlayers-3-does-not-extend-beyond-view
+
+setup the comments extension
