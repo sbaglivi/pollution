@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans&display=swap');
 * {
   margin: 0px;
   padding: 0px;
@@ -9,6 +10,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  font-family: 'PT Sans', sans-serif;
 }
 .navbar {
   flex: 0 0 50px;
@@ -20,7 +22,9 @@ body {
 }
 .navbar-links li {
   display: inline-block;
+  margin-left: 1em;
 }
 .navbar-links a {
   color: white;
+  text-decoration: none;
 }

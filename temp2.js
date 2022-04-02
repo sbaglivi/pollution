@@ -120,7 +120,7 @@ let selectedStyle = new Style({
 })
 const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 let popup = new Overlay({
-    element: document.getElementById('popup')
+    element: document.getElementById('popup'),
 })
 map.addOverlay(popup);
 /*

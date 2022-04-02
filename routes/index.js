@@ -66,10 +66,11 @@ router.use((req, res, next) => {
 })
 // Views Routes
 router.get("/", (req, res) => {
-    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
-        if (err) throw err;
-        res.render("home", { user: req.user, submissions: results });
-    })
+    // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
+    //     if (err) throw err;
+    //     res.render("home", { user: req.user, submissions: results });
+    // })
+    res.redirect('/map');
 });
 router.get('/map', (req, res) => {
     res.render('temp', { user: req.user });

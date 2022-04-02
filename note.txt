@@ -14,3 +14,20 @@ Al momento devo capire come differenziare un click per selezionare da un click s
 Voglio anche aggiungere un bottone per chiudere popup al popup stesso.
 click sulla mappa dovrebbe avere al suo interno: coordinate, x per chiudere, link per segnalare in quelle coordinate.
 (il click sulla mappa deve anche creare una feature?)
+
+let x-direction = right;
+let y-direction = bottom;
+let xoffset = ? get element width
+let yoffset = ? get element height
+let coordinates = e.coordinate;
+let [clickX, clickY] = getclickedpixelfromcoordinate
+let spaceBottom, spaceTop = ? 
+let spaceRight, spaceLeft = ?
+if spaceRight < xoffset && spaceLeft >= xoffset: x-direction = left;
+if spaceBottom < yoffset && spaceTop >= yoffset: y-direction = top;
+if x-direction !== right:
+    x-position = clickX - xoffset;
+if y-direction !== bottom:
+    y-position = clickY - yoffset;
+newCoordinates = getCoordinatesFromPixel(x-position, y-position)
+setPosition(newCoordinates);
