@@ -3,13 +3,18 @@
   flex: 1 0 500px;
 }
 #popup {
-  display: none;
+  /* visibility: hidden; */
+  /* display: none; */
   position: absolute;
   background-color: white;
   margin: 8px 0px 0px 8px;
   padding: 8px;
   border: 1px solid black;
 }
+/*  Without the line below I can't calculate the width / height of popup element on first user click */
+.ol-overlay-container {
+  display: block !important;
+} 
 #search {
   position: absolute;
   top: 65px;

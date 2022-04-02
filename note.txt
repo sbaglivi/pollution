@@ -32,6 +32,13 @@ if y-direction !== bottom:
 newCoordinates = getCoordinatesFromPixel(x-position, y-position)
 setPosition(newCoordinates);
 
+getPixelFromCoordinate(coordinate) // to translate coordinate into pixel
+getCoordinateFromPixel(pixel)
+getEventPixel(event)
+getSize() to get full map size?
+getView() / getViewPort()?
+
+
 useful link for reference https://stackoverflow.com/questions/34209971/popover-overlay-in-openlayers-3-does-not-extend-beyond-view
 
 setup the comments extension

@@ -10,6 +10,8 @@ import { Style, Fill, Stroke, Circle, Icon } from 'ol/style';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol/index';
 import { Overlay } from 'ol';
+// import { getEventPixel, getPixelFromCoordinate } from 'ol/pixel';
+// import { getCoordinateFromPixel } from 'ol/coordinate';
 import { toSize } from 'ol/size';
 import { Control, defaults as defaultControls } from 'ol/control'
 
@@ -59,6 +61,10 @@ addFeatures(source);
 let strokeStyle = new Stroke({
     color: [50, 50, 50, 1],
     width: 2,
+})
+let thinStroke = new Stroke({
+    color: [0, 0, 0, 1],
+    width: 1
 })
 let imageStyle = new Circle({
     fill: new Fill({
@@ -117,6 +123,16 @@ let selectedImage = new Circle({
 })
 let selectedStyle = new Style({
     image: selectedImage
+})
+let clickMarkerImage = new Circle({
+    fill: new Fill({
+        color: [200, 0, 0, 1],
+    }),
+    radius: 4,
+    stroke: thinStroke,
+})
+let clickMarkerStyle = new Style({
+    image: clickMarkerImage
 })
 const checkArraysEqual = (array1, array2) => array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 let popup = new Overlay({
@@ -227,6 +243,14 @@ When I deselect I'll have an array of items to deselect instead of one
 For simplicity popup will open again on click point rather than on feature / middle of features.
 
 */
+const getElementWidthAndHeight = element => {
+    element.style.display = "block";
+    var height = element.offsetHeight + 0;
+    var width = element.offsetWidth + 0;
+    return [width, height];
+}
+let nonFeatureMarker = null;
+let pastMarkers = [];
 map.on('singleclick', e => {
     let element = popup.getElement();
     console.log(element) // DEBUGGING
@@ -242,6 +266,11 @@ map.on('singleclick', e => {
             }
             console.log(currentSelection); // DEBUGGING
         }
+        if (nonFeatureMarker) {
+            source.removeFeature(nonFeatureMarker);
+            nonFeatureMarker = null;
+            console.log('removed a marker from the map') // DEBUGGING
+        }
         // hide popup: think this has to happen both if previously a feature was selected or normal popup, even when feature is selected I want a popup to be shown.
         element.innerHTML = '';
         element.style.display = 'none';
@@ -250,9 +279,13 @@ map.on('singleclick', e => {
     let features = [];
     map.forEachFeatureAtPixel(e.pixel, f => {
         features.push(f);
-    })
+    }, layer => layer === vector)
     let coords = null;
-    if (features.length > 0) {
+    // if (features.length > 0 && !features.includes(nonFeatureMarker)) {
+    if (features.length > 0 && !features.includes(pastMarkers[pastMarkers.length - 1])) {
+        console.log(nonFeatureMarker)
+        console.log(source.getFeatures());
+        console.log(pastMarkers); // For some reason .forEachFeatureAtPixel finds the feature even after it has been removed from the map. This only happens if I click twice in the same points, if I click another time it registers that the feature has been removed.
         console.log(features);
         console.log('just printed the feature(s)') // DEBUGGING
         let selected_sites;
@@ -283,6 +316,13 @@ map.on('singleclick', e => {
         // There is a bug where the popup gets positioned in a certain place but if you moved the map in the opposite direction it will be quite far away.
 
     } else {
+        // Want to show a small marker to indicate the point that was clicked on the map. Obv will need logic to hide it the next time the user clicks on map.
+
+
+        nonFeatureMarker = new Feature(new Point(e.coordinate));
+        nonFeatureMarker.setStyle(clickMarkerStyle);
+        pastMarkers.push(nonFeatureMarker)
+        source.addFeature(nonFeatureMarker);
         coords = e.coordinate;
         let [lon, lat] = toLonLat(coords);
         currentSelection = 'popup' // seems shit 
@@ -295,14 +335,41 @@ map.on('singleclick', e => {
 
     }
     console.log(element) //DEBUGGING
-    popup.setPosition(e.coordinate);
-    // popup.setPosition(coords); To do it properly I'd have to understand the periodicity of the map width / longitude and adjust for that. A great simplification is to just put popup wherever the user clicks even thought it won't be perfectly centered on the feature. 
-    console.log(`event coordinates: ${e.coordinate}\ncalculated coordinates: ${coords}`)
     element.style.display = 'block';
+    element.style.display = 'absolute';
+    // requestAnimationFrame(positionPopup.bind(null, element, e.coordinate));
+    let elementWidth = element.offsetWidth;
+    let elementHeight = element.offsetHeight;
+    console.log(`element offsetwidth: ${elementWidth}, element offsetheight: ${elementHeight}`)
+    let [left, top] = map.getPixelFromCoordinate(e.coordinate); // Can probably just use e.pixel instead
+    let [mapWidth, mapHeight] = map.getSize();
+    let right = mapWidth - left;
+    let bottom = mapHeight - top;
+    console.log(`available space [left, top]: [${left}, ${top}]. available space [right, bottom]: [${right}, ${bottom}]`);
+    let [xDirection, yDirection] = ['right', 'bottom'];
+    if (right < elementWidth && left >= elementWidth) xDirection = 'left';
+    if (bottom < elementHeight && top >= elementHeight) yDirection = 'top';
+    let xPosition = xDirection === 'right' ? left : left - elementWidth - 16; // By default the popup has an offset of 8 pixel to the right because of margin, by removing 16 I'm reversing the margin to the left
+    let yPosition = yDirection === 'bottom' ? top : top - elementHeight - 16;
+    popup.setPosition(map.getCoordinateFromPixel([xPosition, yPosition]));
+    // console.log(map.getCoordinateFromPixel([xPosition, yPosition]))
 
+    // console.log(map.getEventPixel(e.originalEvent)); // DEBUGGING
+    // console.log('first row was translation of coordinates into pixels, second was event pixel') // Not sure why but getEventPixel needs e.originalEvent instead. Also the numbers returned are 'almost' the same. 333 vs 333+6e-14
+    // console.log(map.getViewport()); SEEMS FUCKING USELESS, maybe not though? map size is the size in pixels of the actual map without navbar.
+    // END OF POPUP POSITIONING
+    // popup.setPositioning('bottom-right') doens't do anything, the default is top-left
+    // popup.setPosition(e.coordinate);
+    // POSITIONING OF POPUP
 
 })
+function positionPopup(element, eventCoordinates) {
 
+    // let [elementWidth, elementHeight] = getElementWidthAndHeight(element);
+    // popup.setPosition(coords); To do it properly I'd have to understand the periodicity of the map width / longitude and adjust for that. A great simplification is to just put popup wherever the user clicks even thought it won't be perfectly centered on the feature. 
+    // console.log(`event coordinates: ${e.coordinate}\ncalculated coordinates: ${coords}`)
+
+}
 
 
 
