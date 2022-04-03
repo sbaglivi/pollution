@@ -3,7 +3,8 @@
   flex: 1 0 500px;
 }
 #popup {
-  /* visibility: hidden; */
+  /* Without this line a small square appears on the top left of map before any popup is opened */
+  visibility: hidden;
   /* display: none; */
   position: absolute;
   background-color: white;

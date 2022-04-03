@@ -334,6 +334,7 @@ map.on('singleclick', e => {
         element.append(submitLink);
 
     }
+    // The current solution works only without zoom. When the user opens a popup and then zooms in or out the popup gets moved because its anchor point is not the clicked point but one shifted to make it visible.
     console.log(element) //DEBUGGING
     element.style.display = 'block';
     element.style.display = 'absolute';
@@ -351,7 +352,16 @@ map.on('singleclick', e => {
     if (bottom < elementHeight && top >= elementHeight) yDirection = 'top';
     let xPosition = xDirection === 'right' ? left : left - elementWidth - 16; // By default the popup has an offset of 8 pixel to the right because of margin, by removing 16 I'm reversing the margin to the left
     let yPosition = yDirection === 'bottom' ? top : top - elementHeight - 16;
-    popup.setPosition(map.getCoordinateFromPixel([xPosition, yPosition]));
+    // popup.setPosition(map.getCoordinateFromPixel([xPosition, yPosition]));
+    let xOffset = xDirection === 'left' ? - elementWidth - 16 : 0;
+    let yOffset = yDirection === 'top' ? - elementHeight - 16 : 0;
+    element.style.visibility = 'visible';
+    popup.setOffset([xOffset, yOffset]);
+    popup.setPosition(e.coordinate);
+
+
+
+
     // console.log(map.getCoordinateFromPixel([xPosition, yPosition]))
 
     // console.log(map.getEventPixel(e.originalEvent)); // DEBUGGING

@@ -12,8 +12,9 @@
                     <textarea rows="8" name="description" placeholder="Describe what was going on"></textarea>
                 </div>
                 <div class="pictureDiv">
-                    <label for="picture">Upload a picure</label>
-                    <input type="file" id="imageInput" name="picture" accept="image/png, image/jpeg" required>
+                    <label id='fileInputLabel' for="picture">Upload a picure</label>
+                    <p id="selectedFile"></p>
+                    <input type="file" id="imageInput" name="picture" accept="image/png, image/jpeg" required hidden>
                     <img src="#" id="imagePreview" alt="upload preview" hidden>
                 </div>
             </div>

@@ -114,3 +114,13 @@ let submitForm = document.getElementById('submitForm');
 //     }
 //     console.log(`hideAuthor is ${formData.get('hideAuthor')}`)
 // })
+let fileInput = document.getElementById('fileInputLabel');
+let selectedFile = document.getElementById('selectedFile');
+fileInput.addEventListener('click', e => {
+    // e.preventDefault()
+    imageInput.click();
+})
+
+imageInput.addEventListener('change', e => {
+    selectedFile.textContent = `${imageInput.files[0].name} ${imageInput.files[0].size}B`;
+})

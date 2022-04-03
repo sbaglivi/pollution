@@ -5,10 +5,12 @@
     <meta charset="utf-8">
     <link href="/css/header.css" rel="stylesheet">
     <link href="/css/<%=css_file%>" rel="stylesheet">
-    <script src='/js/<%=js_file%>' type="text/javascript" defer></script>
-    <title>
-        <%= title %>
-    </title>
+    <% if (js_file) { %>
+        <script src='/js/<%=js_file%>' type="text/javascript" defer></script>
+        <% } %>
+            <title>
+                <%= title %>
+            </title>
 </head>
 
 <body>
