@@ -151,7 +151,7 @@ router.route("/submit/:latlon?")
                 console.error(e.message);
             }
         }
-        res.render("submit", { lat: lat, lon: lon });
+        res.render("submit2", { lat: lat, lon: lon });
     })
     .post(helpers.isLoggedIn, upload.single('picture'), async (req, res, next) => {
 

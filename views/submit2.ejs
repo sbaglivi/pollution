@@ -1,0 +1,36 @@
+<%- include("partials/header", {title: "Submit" , css_file: "submit.css" , js_file: "submit.js" }) %>
+    <div class="formDiv">
+        <h2>Signal a pollution site</h2>
+        <form>
+            <!-- Trying to get: title, (description), lat, lon, picture -->
+            <div class="rowDiv">
+                <label class="hidden" for="picture">Title:</label>
+                <input type="text" placeholder="Title">
+                <label id="fileInputLabel">Upload an image</label>
+                <p class="hidden" id="selectedFile"></p>
+                <input type="file" name="picture" class="hidden" accept="image/png, image/jpeg" required
+                    id="imageInput">
+            </div>
+            <div class="rowDiv">
+                <label class="hidden" for="">Description (optional):</label>
+                <textarea placeholder="Description (optional)"></textarea>
+            </div>
+            <h3>Where did it happen?</h3>
+            <div class="rowDiv">
+                <label for="" class="hidden">Latitude:</label>
+                <input type="number" id="latitude" placeholder="Latitude" value="<%=lat%>">
+                <label for="" class="hidden">Longitude:</label>
+                <input type="number" id="longitude" placeholder="Longitude" value="<%=lon%>">
+            </div>
+            <label for="address" class="hidden">Search for an address</label>
+            <!-- <label>Choose on map</label> -->
+            <div class="geocodingForm">
+                <input type="text" name="address" placeholder="Search for an address">
+                <button type="button">Go</button>
+                <div class="resultsDiv"></div>
+            </div>
+            <!-- <div class="mapSearch">
+
+            </div> -->
+        </form>
+    </div>

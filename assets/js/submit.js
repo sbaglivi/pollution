@@ -1,4 +1,5 @@
 const imageInput = document.getElementById('imageInput');
+/*
 const imagePreview = document.getElementById('imagePreview');
 imageInput.onchange = evt => {
     const [file] = imageInput.files
@@ -7,11 +8,11 @@ imageInput.onchange = evt => {
         imagePreview.removeAttribute('hidden')
     }
 }
-
+*/
 let geocodingForm = document.getElementsByClassName("geocodingForm")[0];
 let geocodingInput = geocodingForm.getElementsByTagName('input')[0];
 let geocodingButton = geocodingForm.getElementsByTagName('button')[0];
-let resultsDiv = document.getElementsByClassName("geocodingResultsDiv")[0];
+let resultsDiv = document.getElementsByClassName("resultsDiv")[0];
 
 const getGeocodingResults = async () => {
     let address = geocodingInput.value;
@@ -89,6 +90,7 @@ const htmlFromResults = (results) => {
     })
     return htmlList;
 }
+/*
 const gpsButton = document.getElementById('gpsButton');
 const gpsResultsDiv = document.getElementsByClassName('gpsResultsDiv')[0];
 function updateLatitudeAndLongitudeFromGPS(position) {
@@ -105,6 +107,7 @@ gpsButton.addEventListener('click', (e) => {
         gpsResultsDiv.innerHTML = "Geolocation is not supported by this browser";
     }
 })
+*/
 let submitForm = document.getElementById('submitForm');
 // submitForm.addEventListener('submit', e => {
 //     e.preventDefault();
@@ -122,5 +125,10 @@ fileInput.addEventListener('click', e => {
 })
 
 imageInput.addEventListener('change', e => {
-    selectedFile.textContent = `${imageInput.files[0].name} ${imageInput.files[0].size}B`;
+    selectedFile.textContent = `${imageInput.files[0].name}`;
+    // selectedFile.textContent = `${imageInput.files[0].name} ${imageInput.files[0].size}B`;
+    selectedFile.style.visibility = 'visible'
+    // selectedFile.style.right = '0px';
+    // selectedFile.style.top = '30px';
+
 })

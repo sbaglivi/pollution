@@ -12,7 +12,7 @@
                     <textarea rows="8" name="description" placeholder="Describe what was going on"></textarea>
                 </div>
                 <div class="pictureDiv">
-                    <label id='fileInputLabel' for="picture">Upload a picure</label>
+                    <label id='fileInputLabel' for="picture">Upload a picture</label>
                     <p id="selectedFile"></p>
                     <input type="file" id="imageInput" name="picture" accept="image/png, image/jpeg" required hidden>
                     <img src="#" id="imagePreview" alt="upload preview" hidden>
@@ -31,17 +31,17 @@
                     <div class="geocodingResultsDiv"></div>
                 </div>
                 <div class="latitudeAndLongitudeDiv">
-                    <p>Insert coordinates yourself:</p>
+                    <!-- <p>Insert coordinates yourself:</p> -->
                     <input id="latitude" type="number" step="any" placeholder="latitude" name="latitude"
                         value="<%=lat%>">
                     <input id="longitude" type="number" step="any" placeholder="longitude" name="longitude"
                         value="<%=lon%>">
                 </div>
-                <div class="gpsDiv">
+                <!-- <div class="gpsDiv"> seems the precision is really lacking
                     <p>Or use the current position from your device gps:</p>
                     <button type="button" id="gpsButton">Use GPS</button>
                     <div class="gpsResultsDiv"></div>
-                </div>
+                </div> -->
             </div>
             <label for="saveAuthor">Hide author</label>
             <input type="checkbox" name="hideAuthor" id="hideAuthor" value="true">

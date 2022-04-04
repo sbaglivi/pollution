@@ -23,6 +23,7 @@ let milanCoordinates = fromLonLat([
 // creating the vector layer and already feeding it the features I created from the db data
 const source = new VectorSource({
     // features: features,
+    // wrapX: false
 });
 // gets features from api
 let pollution_sites;
@@ -201,6 +202,34 @@ map.on('click', e => {
     // the selection effect though. The selected item seemed to deselect itself automatically though, not sure how? need to test
 })
 */
+const adjustClickMarkerLongitude = (markerLongitude) => {
+    let iterations = 0;
+    let mapWidth = 40075016.68; // ?
+    // Apparently map width is (fucking obviously) the full map width. If it does admit negative values like I had already thought it would that means that the whole range of coordinates will be covered not in [0, mapWidth] but in [-mapWidth/2, mapWidth/2]
+    while (markerLongitude >= mapWidth / 2 || markerLongitude <= - mapWidth / 2) {
+        if (iterations > 10) return -1;
+        if (markerLongitude >= mapWidth) markerLongitude -= mapWidth;
+        else markerLongitude += mapWidth;
+        iterations++;
+    }
+    return markerLongitude;
+}
+const calculateCoordinates = (clickLongitude, featureLongitude) => {
+    let mapWidth = 40075016.68; // ?
+    let iterations = 0;
+    let closest = -999999999;
+    console.log(clickLongitude, featureLongitude)
+    while ((clickLongitude / featureLongitude) > 1.02 || (clickLongitude / featureLongitude) < 0.98) {
+        if (iterations > 10) return (closest);
+        if (clickLongitude < featureLongitude) featureLongitude -= mapWidth;
+        else featureLongitude += mapWidth;
+        if (Math.abs(clickLongitude / featureLongitude - 1) < closest) {
+            closest = clickLongitude / featureLongitude;
+        }
+        iterations++;
+    }
+    return (featureLongitude);
+}
 let currentSelection = null;
 // need a normal style and a selected style, when I click on a new point I remove the selected style from old selection, update selection pointer and apply new style to clicked item.
 // In theory there should be 3 possible states before a click: feature selected / popup open outside of a feature / nothing. 
@@ -318,11 +347,17 @@ map.on('singleclick', e => {
     } else {
         // Want to show a small marker to indicate the point that was clicked on the map. Obv will need logic to hide it the next time the user clicks on map.
 
-
-        nonFeatureMarker = new Feature(new Point(e.coordinate));
-        nonFeatureMarker.setStyle(clickMarkerStyle);
+        let markerCoordinates = [adjustClickMarkerLongitude(e.coordinate[0]), e.coordinate[1]]
+        console.log(`calculated coordinates: ${markerCoordinates}, previous coordinates ${e.coordinate}`)
+        nonFeatureMarker = new Feature(new Point(markerCoordinates));
+        // nonFeatureMarker.setStyle(clickMarkerStyle);
+        nonFeatureMarker.setStyle(selectedStyle);
         pastMarkers.push(nonFeatureMarker)
+        console.log(`feature length before adding marker: ${source.getFeatures().length}`)
         source.addFeature(nonFeatureMarker);
+        console.log(`feature length before after marker: ${source.getFeatures().length}`)
+        console.log(`click marker coordinates: ${nonFeatureMarker.getGeometry().getCoordinates()}`);
+        console.log(`click coordinates ${e.coordinate}`)
         coords = e.coordinate;
         let [lon, lat] = toLonLat(coords);
         currentSelection = 'popup' // seems shit 
@@ -357,7 +392,17 @@ map.on('singleclick', e => {
     let yOffset = yDirection === 'top' ? - elementHeight - 16 : 0;
     element.style.visibility = 'visible';
     popup.setOffset([xOffset, yOffset]);
-    popup.setPosition(e.coordinate);
+    if (features.length > 0) {
+        let featureCoords = features[0].getGeometry().getCoordinates();
+        console.log(`feature coords are: ${featureCoords},  event coordinates are: ${e.coordinate}`)
+        let calculatedCoordinates = calculateCoordinates(e.coordinate[0], featureCoords[0])
+        console.log(`calculated coordinates: ${calculatedCoordinates}`);
+        popup.setPosition([calculatedCoordinates, featureCoords[1]])
+    } else {
+        popup.setPosition(e.coordinate);
+
+    }
+    // popup.setPosition(coords);
 
 
 

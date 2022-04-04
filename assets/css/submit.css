@@ -16,6 +16,9 @@ body {
   justify-content: space-evenly;
   align-items: center;
 } */
+body {
+  align-items: center;
+}
 .formDiv {
   width: 80em;
   flex-grow: 1;
@@ -24,23 +27,59 @@ body {
   justify-content: center;
   align-items: center;
 }
-input, textarea {
-  font-size: inherit;
+input, textarea, button {
+  font-size: 100%;
   font-family: inherit;
+  box-sizing: border-box;
+}
+input[type='text'], input[type='number'] {
+  border: none;
+  border-bottom: 1px solid black;
+}
+textarea {
+  border-radius: 4px;
+  border: 1px solid black;
+  padding: 4px;
 }
 #fileInputLabel {
-  border: 1px solid black;
-  background-color: lightgrey;
+  border: 1px solid #8f8f9d;
+  background-color: #e9e9ed;
   display: inline-block;
-  padding: 2px;
+  padding: 4px;
+  border-radius: 4px;
 }
 #fileInputLabel:hover {
-  background-color: #e3e3e3;
+  background-color: #c3c3c3;
+}
+.hidden {
+  visibility: hidden;
+  position: absolute;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 2em;
+  max-width: 80em;
+  min-width: 30em;
+}
+.rowDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+#selectedFile {
+  transform: translate(0, 100%);
+  bottom: -4px;
+  right: 0px;
 }
 .detailsDiv {
   display: grid;
   grid-template-rows: auto auto auto;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 60% 40%;
   row-gap: 20px;
 }
 .detailsDiv input[type="text"],
@@ -56,19 +95,19 @@ textarea {
 }
 .titleDiv {
   grid-row: 2/3;
-  grid-column: 1/2;
+  grid-column: 1/3;
 }
 .descriptionDiv {
   grid-row: 3/4;
   grid-column: 1/2;
 }
 .pictureDiv {
-  grid-row: 2/4;
+  grid-row: 3/4;
   grid-column: 2/3;
 }
 #imagePreview {
-  max-width: 300px;
-  max-height: 300px;
+  /* max-width: 300px; */
+  max-height: 150px;
 }
 .detailsDiv h2 {
   grid-row: 1/2;
@@ -90,7 +129,7 @@ textarea {
 }
 .geocodingDiv {
   grid-row: 3/4;
-  grid-column: 1/2;
+  grid-column: 1/3;
 }
 .latitudeAndLongitudeDiv {
   grid-row: 2/3;
@@ -112,4 +151,16 @@ button {
 }
 .active {
   background-color: grey;
+}
+/* Hide number input arrows */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
