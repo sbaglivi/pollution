@@ -1,0 +1,10 @@
+body {
+    align-items: center;
+}
+.content {
+    flex-grow: 1;
+    margin-top: max(20vh, 1em);
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}

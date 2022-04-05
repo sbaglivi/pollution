@@ -12,5 +12,14 @@ module.exports = {
             res.redirect('/login');
         }
         return next();
+    },
+    isAuthorized: (req, res, next) => {
+        if (!req.isAuthenticated() || req.user.id != req.params.userId) {
+            console.log(`req.params.userId ${req.params.userId} !== req.user.id ${req.user.id}`);
+            res.redirect('/');
+        }
+        return next();
     }
+
+
 }

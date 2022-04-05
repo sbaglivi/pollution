@@ -1,0 +1,17 @@
+<%- include('partials/header', {title: 'Profile' , css_file: 'profile.css' , js_file: 'profile.js' }) %>
+
+    <body>
+        <div class="content">
+            <h1>Welcome to the profile section</h1>
+            <% if (submissions.length> 0){ %>
+                <h3>Here are your submissions:</h3>
+                <ul>
+                    <% submissions.forEach(submission=> { %>
+                    <li><span class="idSpan" hidden><%=submission.id%></span><a href='/submissions/<%=submission.id%>' class="nameSpan"><%=submission.name%></a> - <span class='deleteSpan'>&#10006;</span></li>
+                    <% }) %>
+                </ul>
+                <% } %>
+        </div>
+    </body>
+
+    </html>

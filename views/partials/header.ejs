@@ -22,13 +22,14 @@
             <li><a href="/submit">Submit</a></li>
             <li>|</li>
             <% if (user) { %>
-                <li></li>
-                Welcome back, <%=user.username%>
-                    </li>
-                    <li><a href="/logout">Logout</a></li>
-                    <% } else { %>
-                        <li><a href="/login">Login</a></li>
-                        <li><a href="/register">Sign up</a></li>
-                        <% } %>
+                <li><a href="/profile/<%=user.id%>">
+                        Welcome back, <%=user.username%>
+                    </a>
+                </li>
+                <li><a href="/logout">Logout</a></li>
+                <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Sign up</a></li>
+                    <% } %>
         </ul>
     </div>

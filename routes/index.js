@@ -58,6 +58,7 @@ const upload = multer({
 // import { makeDirectoryIfNotExists } from "../functions.mjs";
 // Basically I found support for imports in nodejs but you can't really mix imports and requires so I think it's just better to stick with require for now
 const helpers = require("../functions");
+const { isAuthorized } = require("../functions");
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use((req, res, next) => {
@@ -175,10 +176,11 @@ router.route("/submit/:latlon?")
         let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         let description = req.body.description || "";
         let author = req.user.username;
+        let authorId = req.user.id;
         let hideAuthor = req.body.hideAuthor === 'true';
         try {
-            connection.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                [req.body.latitude, req.body.longitude, req.body.name, imageName, author, description, hideAuthor, date])
+            connection.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, author_id, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [req.body.latitude, req.body.longitude, req.body.name, imageName, author, authorId, description, hideAuthor, date])
         } catch (e) {
             res.send(`Error while trying to save the data in the database:\n${e.message}`);
         }
@@ -201,7 +203,8 @@ router.get('/submissions/:id', (req, res) => {
         }
         let date = new Date(results[0].submission_date);
         results[0].submission_date = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-        res.render('submission', { submission: results[0] })
+        let editingEnabled = req.isAuthenticated() && req.user.id == results[0].author_id;
+        res.render('submission', { submission: results[0], editingEnabled })
     })
 })
 router.route("/register")
@@ -241,6 +244,21 @@ router.route("/register")
             })
         })
     })
+router.get('/profile/:userId', isAuthorized, (req, res) => {
+    connection.query('SELECT * FROM pollution_sites WHERE author_id = ?', [req.user.id], (err, results, fields) => {
+        if (err) throw err;
+        res.render('profile', { submissions: results });
+    })
+})
+router.delete('/deleteSubmission/:id', (req, res) => {
+    connection.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id], (err, results, fields) => {
+        if (err) throw err;
+        if (results[0].author_id !== req.user.id) {
+            res.json("Deletion not authorized as author id doesn't match current logged in user id");
+        }
+        res.json(`Ok, authorization give to delete submission titled ${results[0].name}`);
+    })
+})
 router.route('/login')
     .get((req, res) => {
         res.render('login');

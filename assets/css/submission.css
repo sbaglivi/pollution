@@ -1,0 +1,30 @@
+.content {
+    flex-grow: 1;
+    margin: auto;
+}
+input, textarea {
+    font-size: 100%;
+    font-family: inherit;
+}
+
+
+.modal {
+  position: absolute;
+  display: none;
+  width: 80vw;
+  height: 80vh;
+  top: 10vh;
+  left: 10vw;
+}
+/* Hide number input arrows */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
