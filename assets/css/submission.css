@@ -1,7 +1,20 @@
 .content {
     flex-grow: 1;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(40em, 80vw);
+    row-gap: 1em;
+    margin-top: max(1em, 10vh);
 }
+.row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 input, textarea {
     font-size: 100%;
     font-family: inherit;
@@ -11,10 +24,15 @@ input, textarea {
 .modal {
   position: absolute;
   display: none;
-  width: 80vw;
+  /* width: 80vw;
   height: 80vh;
   top: 10vh;
-  left: 10vw;
+  left: 10vw; */
+  left: 50vw;
+  transform: translate(-50%);
+  padding: 1em;
+  background-color: white;
+  border: 1px solid black;
 }
 /* Hide number input arrows */
 /* Chrome, Safari, Edge, Opera */

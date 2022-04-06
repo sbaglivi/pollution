@@ -1,25 +1,38 @@
 <%- include('partials/header', {title: submission.name, css_file: 'submission.css', js_file: 'submission.js'}) %>
 <div class="content">
-    <h1 class="title"><%=submission.name%></h1>
-    <!-- <h2>You are <%=editingEnabled ? '' : 'not'%> allowed to edit this page</h2> -->
+    <div class="row">
+        <p class="submissionId" hidden><%=submission.id%></p>
+        <h1 class="title"><%=submission.name%></h1>
     <% if (editingEnabled){ %>
         <button class="editButton">Edit</button>
+        <button class="applyButton" hidden>Apply</button>
     <% } %>
-    <% if (!submission.hide_author) { %>
-        <h2>by <span class="author"><%=submission.author%></span></h2>
-    <% } %>
-    <p>Lat: <span class="latitude"><%=submission.latitude%></span> Lon: <span class="longitude"><%=submission.longitude%></span></p>
-    <h2>Submitted on: <span class="date"><%=submission.submission_date%></span></h2>
-    <img src="/resized/<%=submission.image_name%>">
-    <p class="description"><%=submission.description%></p>
+    </div>
+    <div class="row">
+
+        <% if (!submission.hide_author) { %>
+            <p>by <span class="author"><%=submission.author%></span></p>
+        <% } %>
+    </div>
+    <div class="row">
+        <div>
+            <p>Lat: <span class="latitude"><%=submission.latitude%></span></p> 
+            <p>Lon: <span class="longitude"><%=submission.longitude%></span></p>
+        </div>
+        <p>Submitted on: <span class="date"><%=submission.submission_date%></span></p>
+    </div>
+    <div class="row">
+        <img src="/resized/<%=submission.image_name%>">
+        <p class="description"><%=submission.description%></p>
+    </div>
+    <!-- <h2>You are <%=editingEnabled ? '' : 'not'%> allowed to edit this page</h2> -->
 </div>
     <div class="modal">
         <div class="edits">
 
         </div>
-        <p>Confirm the changes made?</p>
-        <button>Review</button>
-        <button>Confirm</button>
+        <button class="reviewButton">Review</button>
+        <button class="confirmButton">Confirm</button>
     </div>
 </body>
 </html>

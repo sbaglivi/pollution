@@ -59,7 +59,9 @@ const upload = multer({
 // Basically I found support for imports in nodejs but you can't really mix imports and requires so I think it's just better to stick with require for now
 const helpers = require("../functions");
 const { isAuthorized } = require("../functions");
+
 router.use(bodyParser.urlencoded({ extended: true }));
+router.use(express.json())
 
 router.use((req, res, next) => {
     res.locals.user = req.user;
@@ -293,11 +295,34 @@ router.post("/submit", (req, res) => {
 // Handle submit
 })
 */
-router.get("/pollution", (req, res) => {
-    // shows a map with points wherever pollution has been signaled.
+router.put('/updateSubmission/:id', (req, res) => {
+    console.log(`req body: `);
+    console.log(req.body)
+    // let data = JSON.parse(req.body); for some reason express is already parsin the request
+    connection.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id], (err, results, fields) => {
+        if (err) throw err;
+        if (results[0].author_id !== req.user.id) {
+            console.log('not authorized');
+            return;
+        }
+        res.json('Good job, I got your update request!')
+        let validFields = ['name', 'description', 'latitude', 'longitude'];
+        for (let key of Object.keys(req.body)) {
+            if (!validFields.includes(key)) {
+                console.log(`${key} is not a valid field, accepted are ${validFields}`);
+                return;
+            }
+        }
+        // TODO the next line needs to be updated to work with a variable number of updated fields and a WHERE id = req.params.id clause
+        connection.query('UPDATE pollution_sites SET ', req.body, (err, results, fields) => {
+            if (err) throw err;
+            // console.log(results)
+            // res.json(results);
+        })
+    })
 })
 router.get("*", (req, res) => {
-    console.log(req.originalUrl);
+    console.log(`original url: ${req.originalUrl}`);
     res.send("You've reached a dead end");
 });
 module.exports = router;
