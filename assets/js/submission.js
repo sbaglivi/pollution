@@ -38,6 +38,7 @@ if (editButton) {
     let reviewButton = document.getElementsByClassName('reviewButton')[0];
     let submissionId = document.getElementsByClassName('submissionId')[0].textContent;
     let changes = {};
+    let nameToElement = { name: titleElement, description: descriptionElement, latitude: latitudeElement, longitude: longitudeElement };
     confirmButton.addEventListener('click', async e => {
         let requestBody = {};
         for (let input in changes) {
@@ -53,6 +54,10 @@ if (editButton) {
         if (response.ok) {
             let result = await response.json();
             console.log(result);
+            for (let key in requestBody) {
+                nameToElement[key].textContent = requestBody[key];
+            }
+            stopEditing();
         }
         modal.style.display = 'none';
     })
@@ -72,7 +77,7 @@ if (editButton) {
         showModal(editsDiv, modal, HTMLElements, HTMLInputs, confirmButton)
     });
     function findChanges(HTMLElements, HTMLInputs) {
-        let elementsName = ['title', 'description', 'latitude', 'longitude'];
+        let elementsName = ['name', 'description', 'latitude', 'longitude'];
         changes = {};
         for (let i = 0; i < HTMLElements.length; i++) {
             if (HTMLElements[i].textContent !== HTMLInputs[i].value) {

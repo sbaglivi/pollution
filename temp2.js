@@ -351,7 +351,7 @@ map.on('singleclick', e => {
         console.log(`calculated coordinates: ${markerCoordinates}, previous coordinates ${e.coordinate}`)
         nonFeatureMarker = new Feature(new Point(markerCoordinates));
         // nonFeatureMarker.setStyle(clickMarkerStyle);
-        nonFeatureMarker.setStyle(selectedStyle);
+        nonFeatureMarker.setStyle(clickMarkerStyle);
         pastMarkers.push(nonFeatureMarker)
         console.log(`feature length before adding marker: ${source.getFeatures().length}`)
         source.addFeature(nonFeatureMarker);
@@ -361,7 +361,7 @@ map.on('singleclick', e => {
         coords = e.coordinate;
         let [lon, lat] = toLonLat(coords);
         currentSelection = 'popup' // seems shit 
-        element.textContent = `You clicked at [${lat.toFixed(5)},${lon.toFixed(5)}]` // testing on google maps even 4 digits seems to be plenty for most applications
+        element.textContent = `You clicked at [${lat.toFixed(5)}, ${lon.toFixed(5)}]` // testing on google maps even 4 digits seems to be plenty for most applications
         let submitLink = document.createElement('a');
         submitLink.textContent = 'Signal an event that happened here'
         submitLink.href = `http://localhost:3000/submit/${lat},${lon}`

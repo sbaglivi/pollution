@@ -67,6 +67,16 @@ router.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 })
+
+async function dbquery(connection, sqlString, params = []) {
+    return new Promise((resolve, reject) => {
+        connection.query(sqlString, params, (err, results) => {
+            if (err) reject(err);
+            resolve(results);
+        })
+    })
+}
+
 // Views Routes
 router.get("/", (req, res) => {
     // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
@@ -81,20 +91,34 @@ router.get('/map', (req, res) => {
 router.get('/table', (req, res) => {
     res.render('table');
 })
-router.get("/features", (req, res) => {
-    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
-        if (err) throw err;
-        // console.log(results);
-        res.set('Access-Control-Allow-Origin', '*');
-        res.status(200).send({ results: results });
-    })
+router.get("/features", async (req, res) => {
+    let features = await dbquery(connection, "SELECT * FROM pollution_sites");
+    console.log(features);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send({ results: features });
+
+    // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
+    //     if (err) throw err;
+    //     // console.log(results);
+    //     res.set('Access-Control-Allow-Origin', '*');
+    //     res.status(200).send({ results: results });
+    // })
 })
-router.get('/pollution_sites', (req, res) => {
-    connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
-        if (err) throw err;
+router.get('/pollution_sites', async (req, res) => {
+    try {
+
+        let sites = await dbquery(connection, "SELECT * FROM pollution_sites");
+        console.log(sites);
         res.set('Access-Control-Allow-Origin', '*');
-        res.status(200).send({ results: results });
-    })
+        res.status(200).send({ results: sites });
+    } catch (e) {
+        console.log(e);
+    }
+    // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
+    //     if (err) throw err;
+    //     res.set('Access-Control-Allow-Origin', '*');
+    //     res.status(200).send({ results: results });
+    // })
 })
 router.route('/upload')
     .get((req, res) => {
@@ -305,25 +329,40 @@ router.put('/updateSubmission/:id', (req, res) => {
             console.log('not authorized');
             return;
         }
-        res.json('Good job, I got your update request!')
+        // res.json('Good job, I got your update request!')
         let validFields = ['name', 'description', 'latitude', 'longitude'];
         let sqlString = 'update pollution_sites set ';
         let firstKey = true
+        let inserts = [];
         for (let key of Object.keys(req.body)) {
             if (!validFields.includes(key)) {
                 console.log(`${key} is not a valid field, accepted are ${validFields}`);
                 return;
             }
             if (firstKey) {
-                sqlString += `${key} == ${req.body[key]}`;
+                // sqlString += `${key} = ${req.body[key]}`;
+                sqlString += `?? = ?`;
                 firstKey = false;
             } else {
-                sqlString += `, ${key} = ${req.body[key]}`;
+                sqlString += `, ?? = ?`;
             }
+            inserts.push(key, req.body[key]);
         }
-        sqlString += ` WHERE id = ${req.params.id}`;
-        console.log(sqlString);
+        inserts.push('id', req.params.id);
+        sqlString += ` WHERE ?? = ?`;
+        let sql = mysql.format(sqlString, inserts)
+        console.log(sql);
         // TODO the next line needs to be updated to work with a variable number of updated fields and a WHERE id = req.params.id clause
+        connection.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            if (!results.changedRows === 1) {
+                console.log('# of changed rows in update is !== 1')
+            }
+            connection.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id], (err, results) => {
+                if (err) throw err;
+                res.json(results[0]);
+            })
+        })
         // string is created properly but values are not escaped, need to look into how I can manually do that.
         // connection.query('UPDATE pollution_sites SET ', req.body, (err, results, fields) => {
         //     if (err) throw err;
