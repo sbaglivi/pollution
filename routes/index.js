@@ -307,18 +307,29 @@ router.put('/updateSubmission/:id', (req, res) => {
         }
         res.json('Good job, I got your update request!')
         let validFields = ['name', 'description', 'latitude', 'longitude'];
+        let sqlString = 'update pollution_sites set ';
+        let firstKey = true
         for (let key of Object.keys(req.body)) {
             if (!validFields.includes(key)) {
                 console.log(`${key} is not a valid field, accepted are ${validFields}`);
                 return;
             }
+            if (firstKey) {
+                sqlString += `${key} == ${req.body[key]}`;
+                firstKey = false;
+            } else {
+                sqlString += `, ${key} = ${req.body[key]}`;
+            }
         }
+        sqlString += ` WHERE id = ${req.params.id}`;
+        console.log(sqlString);
         // TODO the next line needs to be updated to work with a variable number of updated fields and a WHERE id = req.params.id clause
-        connection.query('UPDATE pollution_sites SET ', req.body, (err, results, fields) => {
-            if (err) throw err;
-            // console.log(results)
-            // res.json(results);
-        })
+        // string is created properly but values are not escaped, need to look into how I can manually do that.
+        // connection.query('UPDATE pollution_sites SET ', req.body, (err, results, fields) => {
+        //     if (err) throw err;
+        // console.log(results)
+        // res.json(results);
+        // })
     })
 })
 router.get("*", (req, res) => {
