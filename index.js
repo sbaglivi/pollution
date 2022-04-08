@@ -2,32 +2,26 @@ const express = require("express");
 const app = express();
 const routes = require('./routes');
 const passport = require('passport');
-//  END OF REQUIRE STATEMENTS
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
+// TODO: fix this shit
 app.use(express.static('views'));
 app.use(express.static('assets'));
 app.use(express.static('uploads'));
 app.use(express.static('/'))
 app.set("view engine", "ejs");
 
-const mysql = require('mysql');
-const sql_options = {
-  host: 'localhost',
-  database: 'pollution',
-  user: 'simone',
-  password: 'enomis'
-}
-const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
-const connection = mysql.createConnection(sql_options);
-let sessionStore = new MySQLStore({}, connection);
+const database = require('./db');
+let sessionStore = new MySQLStore({}, database.pool);
 app.use(session({
   secret: 'keyboard cat',
   resave: 'false',
   saveUninitialized: 'false',
   store: sessionStore,
 }))
-// passport.initialize();
+
+// passport.initialize(); doesn't seem needed not sure why it's still here
 app.use(passport.authenticate('session'))
 app.use('/', routes);
 

@@ -94,7 +94,7 @@ router.get('/table', (req, res) => {
 router.get("/features", async (req, res) => {
     let features = await dbquery(connection, "SELECT * FROM pollution_sites");
     console.log(features);
-    res.set('Access-Control-Allow-Origin', '*');
+    // res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send({ results: features });
 
     // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
@@ -109,7 +109,7 @@ router.get('/pollution_sites', async (req, res) => {
 
         let sites = await dbquery(connection, "SELECT * FROM pollution_sites");
         console.log(sites);
-        res.set('Access-Control-Allow-Origin', '*');
+        // res.set('Access-Control-Allow-Origin', '*');
         res.status(200).send({ results: sites });
     } catch (e) {
         console.log(e);
