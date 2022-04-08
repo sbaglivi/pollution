@@ -58,7 +58,6 @@ const upload = multer({
 // import { makeDirectoryIfNotExists } from "../functions.mjs";
 // Basically I found support for imports in nodejs but you can't really mix imports and requires so I think it's just better to stick with require for now
 const helpers = require("../functions");
-const { isAuthorized } = require("../functions");
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(express.json())
@@ -94,7 +93,7 @@ router.get('/table', (req, res) => {
 router.get("/features", async (req, res) => {
     let features = await dbquery(connection, "SELECT * FROM pollution_sites");
     console.log(features);
-    // res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send({ results: features });
 
     // connection.query("SELECT * FROM pollution_sites", (err, results, fields) => {
@@ -108,9 +107,8 @@ router.get('/pollution_sites', async (req, res) => {
     try {
 
         let sites = await dbquery(connection, "SELECT * FROM pollution_sites");
-        console.log(sites);
-        // res.set('Access-Control-Allow-Origin', '*');
-        res.status(200).send({ results: sites });
+        // console.log(sites);
+        res.set('Access-Control-Allow-Origin', '*').status(200).send({ results: sites });
     } catch (e) {
         console.log(e);
     }
@@ -270,19 +268,17 @@ router.route("/register")
             })
         })
     })
-router.get('/profile/:userId', isAuthorized, (req, res) => {
+router.get('/profile/:userId', (req, res) => {
     connection.query('SELECT * FROM pollution_sites WHERE author_id = ?', [req.user.id], (err, results, fields) => {
         if (err) throw err;
         res.render('profile', { submissions: results });
     })
 })
 router.delete('/deleteSubmission/:id', (req, res) => {
-    connection.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id], (err, results, fields) => {
+    connection.query('DELETE FROM pollution_sites WHERE id = ? AND author_id = ?', [req.params.id, req.user.id], (err, results) => {
         if (err) throw err;
-        if (results[0].author_id !== req.user.id) {
-            res.json("Deletion not authorized as author id doesn't match current logged in user id");
-        }
-        res.json(`Ok, authorization give to delete submission titled ${results[0].name}`);
+        console.log(results);
+        res.send(results)
     })
 })
 router.route('/login')

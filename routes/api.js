@@ -3,9 +3,8 @@ const router = express.Router();
 const NodeGeocoder = require("node-geocoder");
 const geocoder = NodeGeocoder({ provider: 'openstreetmap' });
 const database = require('../db');
-const sharp = require("sharp");
 const path = require('path');
-const fs = require('fs');
+const { makeDirectoryIfNotExists, deleteFile, isLoggedIn, processAndSaveImage, getFormattedDate, createUniqueImageName, buildUpdateString } = require('../functions');
 const [UPLOADS_DIR, RESIZED_DIR] = ['uploads/', 'resized'];
 const storage = multer.diskStorage({
     destination: UPLOADS_DIR,
@@ -14,21 +13,6 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({ storage })
-
-// TODO Move all functions to an external file and then use object destructuring to import the ones you need. (inludes the fs.unlink so we can avoid another import);
-async function processAndSaveImage(initialPath, width, height, quality, finalPath) {
-    try {
-        await sharp(initialPath).resize(width, height).jpeg({ quality: quality }).toFile(finalPath)
-    } catch (error) {
-        throw error;
-    }
-}
-function createUniqueImageName(submissionName) {
-    let imageName = submissionName + Date.now();
-    imageName = imageName.replace(/\s+/g, '_').toLowerCase();
-    return imageName;
-}
-const getFormattedDate = (date = new Date()) => `${date.getFullYear()}-${String(date.getMontH() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
 router.get('/getAllSubmissions', async (req, res) => {
     try {
@@ -45,7 +29,7 @@ router.post('/createSubmission', isLoggedIn, upload.single('picture'), async (re
         makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
         let imageName = createUniqueImageName(req.body.name);
         await processAndSaveImage(req.file.path, 200, 200, 90, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
-        fs.unlinkSync(req.file.path);
+        deleteFile(req.file.path);
         let [date, description, author, authorId, hideAuthor] = [getFormattedDate(), req.body.description || "", req.user.username, req.user.id, req.body.hideAuthor === 'true'];
         await database.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, author_id, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [req.body.latitude, req.body.longitude, req.body.name, imageName, author, authorId, description, hideAuthor, date]);
@@ -61,14 +45,22 @@ Next 2 need to verify that whoever is accessing the route has authorization -> a
 If I grab the author_id from the request I can get faked and update a submission id of someone else. I can just do an update where author_id = req.user.id and id = req.params.id
 */
 router.put('/updateSubmission/:id', isLoggedIn, async (req, res) => {
-
+    try {
+        sqlString = buildUpdateString('pollution_sites', req.body, { id: req.params.id, author_id: req.user.id });
+        let results = await database.query(sqlString);
+        if (results.changedRows !== 1) throw Error("More or less than one row was updated");
+        let updatedRows = await database.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id])
+        res.json(updatedRows[0]);
+    } catch (error) {
+        throw error;
+    }
 })
 
 router.delete('/deleteSubmission/:id', isLoggedIn, async (req, res) => {
     try {
         let result = await database.query('DELETE * FROM pollution_sites WHERE id = ? AND author_id = ?', [req.params.id, req.user.id]);
-        // TODO: check what kind of result is given to make sure that deletion was successful.
-        console.log(result);
+        if (result.affectedRows !== 1) throw Error("Either no rows were deleted because you don't have authorization or multiple were deleted because there were duplicates");
+        res.send(`Submission with id ${req.params.id} deleted correctly`);
     } catch (error) {
         throw error;
     }

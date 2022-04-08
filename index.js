@@ -4,6 +4,7 @@ const routes = require('./routes');
 const passport = require('passport');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
+const sqlString = require('sqlstring');
 
 // TODO: fix this shit
 app.use(express.static('views'));
