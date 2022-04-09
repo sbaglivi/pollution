@@ -7,7 +7,7 @@
                 <h3>Here are your submissions:</h3>
                 <ul>
                     <% submissions.forEach(submission=> { %>
-                    <li><span class="idSpan" hidden><%=submission.id%></span><a href='/submissions/<%=submission.id%>' class="nameSpan"><%=submission.name%></a> - <span class='deleteSpan'>&#10006;</span></li>
+                    <li><span class="idSpan" hidden><%=submission.id%></span><a href='/submission/<%=submission.id%>' class="nameSpan"><%=submission.name%></a> - <span class='deleteSpan'>&#10006;</span></li>
                     <% }) %>
                 </ul>
                 <% } %>

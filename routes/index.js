@@ -226,6 +226,9 @@ router.get('/submissions/:id', (req, res) => {
             console.log(`${key} - ${results[0].submission_date[key]}`);
         }
         let date = new Date(results[0].submission_date);
+        console.log('date data')
+        console.log(results[0].submission_date.getFullYear())
+        console.log('end of date data');
         results[0].submission_date = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
         let editingEnabled = req.isAuthenticated() && req.user.id == results[0].author_id;
         res.render('submission', { submission: results[0], editingEnabled })

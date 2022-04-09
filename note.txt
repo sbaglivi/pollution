@@ -42,3 +42,34 @@ getView() / getViewPort()?
 useful link for reference https://stackoverflow.com/questions/34209971/popover-overlay-in-openlayers-3-does-not-extend-beyond-view
 
 setup the comments extension
+
+object destructuring is really good, if an object has some properties like prop1 and prop2 you can extract them with:
+let {prop1, prop2} = object; if you want you can also give them an alias like let {prop1: myProp1, prop2: myProp2} = object; and then the variables will be myProp1/2
+
+res.send sends the content as text/html, res.json sets it as json content type.
+
+require first tries to find the absolute path of the file to be loaded. if you do `node` and then `module.paths` it prints a list of dicrectories in which its searching for node_modules.
+it tries first with folder and files with maximum specificity (inside the project node_modules folder) and then it goes back to the outer folder and so on until it finds a match, prompting an error if it can't.
+You can also specify another folder in which to start the search by using a relative or absolute path.
+It searches for a js file matching what's searched but it also searches for a folder that matches the name with an index.js file inside of it. You can change the name of the main file within a module folder in package.json
+require.resolve checks if a package is available without loading if it is. Can be used for optional modules that get used when they're there.
+module.exports allows you to set a return value from the module that's being required. you can also specify multiple properties of the export object to be returned like
+exports.a = ...; exports.b = ...; and then the returned value will be exports = {a: ..., b: ...};
+You can't instead just substitude the export object wth something else like: `exports = {...}` because exports is just a reference to module.exports object, by assigning it another value we're losing that reference.
+Node runs a wrapper function around your code not to give it global scope in the procoess it does something like 
+function (require, module, __filename, __dirname) {
+  let exports = module.exports;
+  // Your Code...
+  return module.exports;
+}
+Require also allows you to import json files and c++?
+Node caches the module it loads so that if someone tries to load them twice it just returns the previous module.exports. If you want to run something twice just return a function that you can run as many times as you want.
+
+Problems I encoutered: 
+- various typos
+- in my isLoggedIn function I was checking if user was not authenticated, if that was the case I would redirect and then I would call return next(). I thought the redirect would be enough to act like a guard like it did previously but for some reason it didnt anymore
+  and ended up trying to send headers twice and crashing the app.
+- I had forgotten to re-include bodyParser somewhere in my app so my auth routes were not getting the body parameters. Despite what I thought I had read last week it seems that express does not have its own body parser again.
+  by default express does not populate req.body, you use express.json() or bodyParser.urlEncoded({extended:true}). .json / .urlEncoded decides which parser handles which type of data. Each one of these when called parses the data and creates the .body, 
+  urlencoded is normal data that is like html escaped space becomes %20 etc. extended means that instead of just getting string values you can get full objects through this parsing (? more to be learned)
+- 

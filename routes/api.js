@@ -4,6 +4,7 @@ const NodeGeocoder = require("node-geocoder");
 const geocoder = NodeGeocoder({ provider: 'openstreetmap' });
 const database = require('../db');
 const path = require('path');
+const multer = require('multer');
 const { makeDirectoryIfNotExists, deleteFile, isLoggedIn, processAndSaveImage, getFormattedDate, createUniqueImageName, buildUpdateString } = require('../functions');
 const [UPLOADS_DIR, RESIZED_DIR] = ['uploads/', 'resized'];
 const storage = multer.diskStorage({
@@ -17,7 +18,7 @@ const upload = multer({ storage })
 router.get('/getAllSubmissions', async (req, res) => {
     try {
         let results = await database.query('SELECT * FROM pollution_sites');
-        res.status(200).send(results);
+        res.status(200).json(results);
     } catch (error) {
         throw error;
     }

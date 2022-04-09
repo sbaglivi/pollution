@@ -5,15 +5,17 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 let database = require('../db');
 
-router.use(passport.authenticate('session'))
+router.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+})
 
-// The strategy requires a verify callback, which accepts these credentials and calls done providing a user.
 passport.use(new LocalStrategy(async function verify(username, password, done) {
     try {
         let results = await database.query("SELECT * FROM users WHERE username = ?", [username]);
-        if (results.length !== 1) return done(null, false, { message: 'Username returned 0 or more than 1 row' });
-        let match = bcrypt.compare(password, results[0].hash);
-        if (!match) return done(null, false, { message: 'The password is incorrect' });
+        if (results.length !== 1) return done(null, false, { message: 'username returned 0 or more than 1 row' })
+        let match = await bcrypt.compare(password, results[0].hash);
+        if (!match) return done(null, false, { message: 'password incorrect' });
         return done(null, results[0]);
     } catch (e) {
         return done(e);
@@ -24,20 +26,20 @@ passport.use(new LocalStrategy(async function verify(username, password, done) {
 passport.serializeUser(function (user, cb) {
     cb(null, { id: user.id })
 })
-passport.deserializeUser(function (user, cb) {
+passport.deserializeUser(async function (user, cb) {
     try {
         let results = await database.query('SELECT * FROM users WHERE id = ?', [user.id]);
-        if (results.length !== 1) cb(null, false, { message: `More than 1 user found with ${user.id} user id` });
-        cb(null, results[0]);
+        if (results.length !== 1) cb(null, false, { message: `More than 1 or 0 users with id ${user.id}` })
+        cb(null, results[0])
     } catch (e) {
-        cb(err);
+        cb(e);
     }
 })
 
 router.route('/login')
-    .get((_, res) => res.render('login'))
+    .get((req, res) => res.render('login'))
     .post(passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }), (req, res) => {
-        res.redirect(req.session.returnTo || '/');
+        res.redirect(req.session.returnTo || '/'); // sometimes I don't know why but this won't work. I'm assuming since redirecting to '/' works that  req.session.returnTo is a truthy value but an invalid one.
         delete req.session.returnTo;
     })
 

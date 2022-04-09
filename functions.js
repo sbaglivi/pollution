@@ -10,11 +10,9 @@ module.exports = {
     },
     deleteFile: path => fs.unlinkSync(path),
     isLoggedIn: (req, res, next) => {
-        if (!req.isAuthenticated()) {
-            req.session.returnTo = req.originalUrl;
-            res.redirect('/login');
-        }
-        return next();
+        if (req.isAuthenticated()) return next();
+        req.session.returnTo = req.originalUrl;
+        res.redirect('/login');
     },
     processAndSaveImage: async function (initialPath, width, height, quality, finalPath) {
         try {
@@ -28,7 +26,7 @@ module.exports = {
         imageName = imageName.replace(/\s+/g, '_').toLowerCase();
         return imageName;
     },
-    getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMontH() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+    getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
     buildUpdateString: (dbName, updatesObject, identityObject) => {
         try {
             let sqlStatement = `UPDATE ${sqlEscape(dbName)} SET `
@@ -56,4 +54,5 @@ module.exports = {
             throw error;
         }
     },
+    parseCoordinatesFromString: (coordinatesString) => coordinatesString.split(',').map(x => parseFloat(x)),
 }

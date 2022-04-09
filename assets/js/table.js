@@ -1,7 +1,7 @@
 const desiredFields = ['latitude', 'longitude', 'name', 'description', 'submission_date', 'author'];
 // other fields are: id, image_name, hide_author
 async function getData() {
-    let response = await fetch('http://localhost:3000/features');
+    let response = await fetch('api/getAllSubmissions');
     if (response.ok) {
         let results = response.json();
         return results;
@@ -20,16 +20,16 @@ const parseCoordinates = (stringValue) => {
 async function createTable() {
     let tableDiv = document.getElementById('pollutedAreasTable');
     let data = await getData();
-    if (data.results.length === 0) {
+    if (data.length === 0) {
         let p = document.createElement('p');
         p.textContent = 'There are currently no polluted areas signaled or we failed to fetch them. Try again later.'
         tableDiv.append(td);
         return;
     }
     let table = document.createElement('table');
-    createTableHead(table, data.results[0]);
+    createTableHead(table, data[0]);
     let tr, td;
-    for (let row of data.results) {
+    for (let row of data) {
         tr = document.createElement('tr');
         // for (let prop in row) {
         for (let prop of desiredFields) {
@@ -45,7 +45,7 @@ async function createTable() {
                 case 'name':
                     let a = document.createElement('a');
                     a.textContent = row[prop];
-                    a.href = `http://localhost:3000/submissions/${row.id}`;
+                    a.href = `submission/${row.id}`;
                     td.append(a);
                     break;
                 case 'latitude':

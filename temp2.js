@@ -28,9 +28,10 @@ const source = new VectorSource({
 // gets features from api
 let pollution_sites;
 const getPollutionSites = async () => {
-    let response = await fetch("http://localhost:3000/pollution_sites")
+    let response = await fetch("api/getAllSubmissions");
+    // let response = await fetch("http://localhost:3000/api/getAllSubmissions")
     if (response.ok) {
-        pollution_sites = (await response.json()).results;
+        pollution_sites = await response.json();
         console.log(pollution_sites)
         console.log('Just printed the pollution sites')
         let newFeatures = pollution_sites.map(db_feature => new Feature(new Point(fromLonLat([db_feature.longitude, db_feature.latitude]))));
@@ -241,7 +242,7 @@ const createFeaturePopup = (element, sites) => {
         let title = document.createElement('h4');
         title.textContent = site.name;
         link.append(title);
-        link.href = `http://localhost:3000/submissions/${site.id}`;
+        link.href = `http://localhost:3000/submission/${site.id}`;
         featureDiv.append(link);
         let imgDiv = document.createElement('div');
         imgDiv.classList.add('imgDiv');

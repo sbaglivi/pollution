@@ -16,14 +16,14 @@ let resultsDiv = document.getElementsByClassName("resultsDiv")[0];
 
 const getGeocodingResults = async () => {
     let address = geocodingInput.value;
-    let response = await fetch(`http://localhost:3000/geocode/${address}`)
+    let response = await fetch(`/api/geocoding/${address}`)
     if (!response.ok) {
         console.log(`Error: ${response}`);
         return;
     }
     let results = await response.json();
     console.log(results);
-    displayResults(resultsDiv, results.results);
+    displayResults(resultsDiv, results);
 }
 geocodingButton.addEventListener('click', async (e) => {
     e.preventDefault();
