@@ -58,6 +58,7 @@ router.put('/updateSubmission/:id', isLoggedIn, async (req, res) => {
 })
 
 router.delete('/deleteSubmission/:id', isLoggedIn, async (req, res) => {
+    // TODO add something to delete the image relative to submission
     try {
         let result = await database.query('DELETE FROM pollution_sites WHERE id = ? AND author_id = ?', [req.params.id, req.user.id]);
         if (result.affectedRows !== 1) throw Error("Either no rows were deleted because you don't have authorization or multiple were deleted because there were duplicates");
