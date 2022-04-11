@@ -1,11 +1,11 @@
 <%- include("partials/header", {title: "Submit" , css_file: "submit.css" , js_file: "submit.js" }) %>
     <div class="formDiv">
         <h2>Signal a pollution site</h2>
-        <form>
+        <form method="POST" action="/api/createSubmission" enctype="multipart/form-data">
             <!-- Trying to get: title, (description), lat, lon, picture -->
             <div class="rowDiv">
                 <label class="hidden" for="picture">Title:</label>
-                <input type="text" placeholder="Title">
+                <input type="text" placeholder="Title" name="name" required>
                 <label id="fileInputLabel">Upload an image</label>
                 <p class="hidden" id="selectedFile"></p>
                 <input type="file" name="picture" class="hidden" accept="image/png, image/jpeg" required
@@ -13,14 +13,14 @@
             </div>
             <div class="rowDiv">
                 <label class="hidden" for="">Description (optional):</label>
-                <textarea placeholder="Description (optional)"></textarea>
+                <textarea placeholder="Description (optional)" name="description"></textarea>
             </div>
             <h3>Where did it happen?</h3>
             <div class="rowDiv">
                 <label for="" class="hidden">Latitude:</label>
-                <input type="number" id="latitude" placeholder="Latitude" value="<%=lat%>">
+                <input type="number" id="latitude" placeholder="Latitude" name="latitude" value="<%=lat%>" required>
                 <label for="" class="hidden">Longitude:</label>
-                <input type="number" id="longitude" placeholder="Longitude" value="<%=lon%>">
+                <input type="number" id="longitude" placeholder="Longitude" name="longitude" value="<%=lon%>" required>
             </div>
             <label for="address" class="hidden">Search for an address</label>
             <!-- <label>Choose on map</label> -->
@@ -29,6 +29,7 @@
                 <button type="button">Go</button>
             </div>
             <div class="resultsDiv"></div>
+            <button>Signal</button>
             <!-- <div class="mapSearch">
 
             </div> -->

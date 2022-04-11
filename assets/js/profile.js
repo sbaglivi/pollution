@@ -7,13 +7,13 @@ Array.from(deleteSpans).forEach(deleteSpan => {
         if (confirm(confirmText)) {
             console.log("Wow, he's really going to do it");
             let id = titleSpan.previousElementSibling.textContent;
-            let result = await fetch(`/deleteSubmission/${id}`, {
+            let result = await fetch(`api/deleteSubmission/${id}`, {
                 method: 'DELETE',
             });
             if (result.ok) {
-                let processedResult = await result.json();
+                let processedResult = await result;
                 console.log(processedResult)
-
+                titleSpan.parentElement.remove();
             } else {
                 console.log(`result not ok`);
                 console.log(result);

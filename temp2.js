@@ -219,8 +219,8 @@ const calculateCoordinates = (clickLongitude, featureLongitude) => {
     let mapWidth = 40075016.68; // ?
     let iterations = 0;
     let closest = -999999999;
-    console.log(clickLongitude, featureLongitude)
-    while ((clickLongitude / featureLongitude) > 1.02 || (clickLongitude / featureLongitude) < 0.98) {
+    console.log(clickLongitude, featureLongitude, clickLongitude / featureLongitude)
+    while ((clickLongitude / featureLongitude) > 1.4 || (clickLongitude / featureLongitude) < 0.6) { // In africa clicking one the feature, but not on the exact middle, can create differences of even 30%.
         if (iterations > 10) return (closest);
         if (clickLongitude < featureLongitude) featureLongitude -= mapWidth;
         else featureLongitude += mapWidth;

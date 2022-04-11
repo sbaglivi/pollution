@@ -72,4 +72,10 @@ Problems I encoutered:
 - I had forgotten to re-include bodyParser somewhere in my app so my auth routes were not getting the body parameters. Despite what I thought I had read last week it seems that express does not have its own body parser again.
   by default express does not populate req.body, you use express.json() or bodyParser.urlEncoded({extended:true}). .json / .urlEncoded decides which parser handles which type of data. Each one of these when called parses the data and creates the .body, 
   urlencoded is normal data that is like html escaped space becomes %20 etc. extended means that instead of just getting string values you can get full objects through this parsing (? more to be learned)
-- 
+- huge waste of time: somehow in rewriting / updating my logged in function I was returning `next` instead of `next()`. Not hard to fix, if you don't get completely derailed. First I thought that the problem might be an asynchronous verify function since any 
+  async function returns a promise value and I thought maybe the internal workings of passport.authenticate might not allow that. So I went back to callbacks for verifying user credentials. After that I was still encountering problems, I blamed it on a redirect
+  not working correctly. This seemed to be caused by problems in either the redirect function itself or the url I was providing which was supposed to be a saved url of whichever log in protected resource the user was trying to access while not authenticated.
+  I thought since I had a fallback static url redirect when the first value was undefined that if not with redirect the problem must be in the saved url being a truthy value but an invalid one. After using only a static value things started working again. So
+  obviously since I hated the callback triangle thing I started retrying the async methods for db access etc. Those seemed to work, frustrated because I had spent a ton of time thinking the problem was with async without noticing a bad redirect I got back to work.
+  Now I noticed that randomly /profile was no longer working either. And look around a bit this was access protected as well, and requests were not getting there even if I was authenticated. Shortly after this luckily I saw my mistake and was able to fix it. But yeah 
+  wasted a ton of time putting in doubt a lot of code because of a small distraction.

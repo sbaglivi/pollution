@@ -46,7 +46,7 @@ if (editButton) {
         }
         // console.log(changes);
         // console.log(requestBody);
-        let response = await fetch(`/updateSubmission/${submissionId}`, {
+        let response = await fetch(`api/updateSubmission/${submissionId}`, {
             method: 'PUT',
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(requestBody)
