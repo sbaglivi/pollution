@@ -49,6 +49,7 @@ router.put('/updateSubmission/:id', isLoggedIn, upload.single('picture'), async 
     try {
         let previousData = null;
         if (req.file) { // is there a new image to be handled?
+            // TODO: check if in an update query you can get as a result the old values to skip the first dbquery. same for delete query in delete route.
             previousData = await database.query("SELECT * FROM pollution_sites WHERE id = ?", [req.params.id]); // even if the user is changing the title and I don't need the old one to generate new imagename, I still need old imagename to delete it.
             let submissionName = req.body.name ? req.body.name : previousData[0].name;
             let imageName = createUniqueImageName(submissionName)

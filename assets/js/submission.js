@@ -60,7 +60,6 @@ if (editButton) {
     fileInput.addEventListener('change', e => {
         updatedFileDiv.style.display = 'block';
         updatedFileName.textContent = `New image:\n${fileInput.files[0].name}`;
-        // TODO update the changes object to include the file
     })
     function resetFileInput() {
         fileInput.value = '';
@@ -102,6 +101,7 @@ if (editButton) {
             }
             if (fileInput.files.length === 1) {
                 submissionImage.src = URL.createObjectURL(fileInput.files[0])
+                // TODO for some reason when I change the url it seems that the image loses its original size. Will have to check better and maybe set boundaries again through style.
 
             }
             currentlyEditing = false;
