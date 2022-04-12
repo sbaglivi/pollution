@@ -79,3 +79,5 @@ Problems I encoutered:
   obviously since I hated the callback triangle thing I started retrying the async methods for db access etc. Those seemed to work, frustrated because I had spent a ton of time thinking the problem was with async without noticing a bad redirect I got back to work.
   Now I noticed that randomly /profile was no longer working either. And look around a bit this was access protected as well, and requests were not getting there even if I was authenticated. Shortly after this luckily I saw my mistake and was able to fix it. But yeah 
   wasted a ton of time putting in doubt a lot of code because of a small distraction.
+- to escape identifiers you need to use a different function than the one for values, otherwise you get them wrapped in '' and sql is NOT happy about that.
+- 

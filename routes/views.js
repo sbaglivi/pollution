@@ -20,7 +20,8 @@ router.get('/submission/:id', async (req, res) => {
         let results = await database.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id]);
         if (results.length !== 1) throw Error(`Found more than one submission for id ${req.params.id}`);
         results[0].submission_date = getFormattedDate(results[0].submission_date);
-        res.render('submission', { submission: results[0], editingEnabled: results[0].author_id === req.user.id })
+        // TODO understand if req.user can be faked by someone and if so how can I prevent that from happening
+        res.render('submission', { submission: results[0], editingEnabled: req.user && results[0].author_id === req.user.id })
     } catch (error) {
         throw error;
     }

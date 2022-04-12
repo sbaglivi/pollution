@@ -16,13 +16,21 @@
     </div>
     <div class="row">
         <div>
-            <p>Lat: <span class="latitude"><%=submission.latitude%></span></p> 
-            <p>Lon: <span class="longitude"><%=submission.longitude%></span></p>
+            <p>Lat: <span class="coordinateSpan latitude"><%=submission.latitude%></span></p> 
+            <p>Lon: <span class="coordinateSpan longitude"><%=submission.longitude%></span></p>
         </div>
         <p>Submitted on: <span class="date"><%=submission.submission_date%></span></p>
     </div>
     <div class="row">
-        <img src="/resized/<%=submission.image_name%>">
+        <div class="imgDiv">
+            <img class='submissionImage' src="/resized/<%=submission.image_name%>">
+            <label for="picture" class="fileInputLabel">Change image</label>
+            <input type="file" class='fileInput' name="picture" hidden accept="image/png, image/jpeg">
+            <div class="updatedFileDiv">
+                <pre class="updatedFileName"></pre>
+                <button class="imageUndoButton">&#10006;</button>
+            </div>
+        </div>
         <p class="description"><%=submission.description%></p>
     </div>
     <!-- <h2>You are <%=editingEnabled ? '' : 'not'%> allowed to edit this page</h2> -->
@@ -31,8 +39,9 @@
         <div class="edits">
 
         </div>
-        <button class="reviewButton">Review</button>
+        <div class="buttonDiv"><button class="reviewButton">Review</button>
         <button class="confirmButton">Confirm</button>
+    </div>
     </div>
 </body>
 </html>

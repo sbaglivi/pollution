@@ -45,22 +45,32 @@ router.post('/createSubmission', isLoggedIn, upload.single('picture'), async (re
 Next 2 need to verify that whoever is accessing the route has authorization -> author_id = user_id. To verify this: I can grap user id from req object.
 If I grab the author_id from the request I can get faked and update a submission id of someone else. I can just do an update where author_id = req.user.id and id = req.params.id
 */
-router.put('/updateSubmission/:id', isLoggedIn, async (req, res) => {
+router.put('/updateSubmission/:id', isLoggedIn, upload.single('picture'), async (req, res) => {
     try {
+        let previousData = null;
+        if (req.file) { // is there a new image to be handled?
+            previousData = await database.query("SELECT * FROM pollution_sites WHERE id = ?", [req.params.id]); // even if the user is changing the title and I don't need the old one to generate new imagename, I still need old imagename to delete it.
+            let submissionName = req.body.name ? req.body.name : previousData[0].name;
+            let imageName = createUniqueImageName(submissionName)
+            await processAndSaveImage(req.file.path, 200, 200, 90, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
+            deleteFile(req.file.path);
+            req.body.image_name = imageName;
+        }
         sqlString = buildUpdateString('pollution_sites', req.body, { id: req.params.id, author_id: req.user.id });
         let results = await database.query(sqlString);
         if (results.changedRows !== 1) throw Error("More or less than one row was updated");
-        let updatedRows = await database.query('SELECT * FROM pollution_sites WHERE id = ?', [req.params.id])
-        res.json(updatedRows[0]);
+        if (req.file) deleteFile(path.resolve(UPLOADS_DIR, RESIZED_DIR, previousData[0].image_name)); // I'd prefer doing it earlier but if there's a problem while inserting in db I might end up deleting an image without replacing it
+        res.status(200).send('Submission updated correctly');
     } catch (error) {
         throw error;
     }
 })
 
 router.delete('/deleteSubmission/:id', isLoggedIn, async (req, res) => {
-    // TODO add something to delete the image relative to submission
     try {
+        let previousData = await database.query('SELECT image_name FROM pollution_sites WHERE id = ?', req.params.id);
         let result = await database.query('DELETE FROM pollution_sites WHERE id = ? AND author_id = ?', [req.params.id, req.user.id]);
+        deleteFile(path.resolve(UPLOADS_DIR, RESIZED_DIR, previousData[0].image_name));
         if (result.affectedRows !== 1) throw Error("Either no rows were deleted because you don't have authorization or multiple were deleted because there were duplicates");
         res.send(`Submission with id ${req.params.id} deleted correctly`);
     } catch (error) {

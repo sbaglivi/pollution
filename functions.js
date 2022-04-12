@@ -1,6 +1,6 @@
 const fs = require('fs');
 const sharp = require('sharp');
-const { sqlEscape } = require('sqlstring');
+const { escape: sqlEscape, escapeId: sqlEscapeId } = require('sqlstring');
 
 module.exports = {
     makeDirectoryIfNotExists: (path) => {
@@ -29,25 +29,25 @@ module.exports = {
     getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
     buildUpdateString: (dbName, updatesObject, identityObject) => {
         try {
-            let sqlStatement = `UPDATE ${sqlEscape(dbName)} SET `
+            let sqlStatement = `UPDATE ${sqlEscapeId(dbName)} SET `
             let firstField = true;
             for (let key in updatesObject) {
                 if (firstField) {
-                    sqlStatement += `${sqlEscape(key)} = ${sqlEscape(updatesObject[key])}`;
+                    sqlStatement += `${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
                     firstField = false;
                     continue;
                 }
-                sqlStatement += `, ${sqlEscape(key)} = ${sqlEscape(updatesObject[key])}`;
+                sqlStatement += `, ${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
             }
             sqlStatement += ` WHERE `
             firstField = true;
             for (let key in identityObject) {
                 if (firstField) {
-                    sqlStatement += `${sqlEscape(key)} = ${sqlEscape(identityObject[key])}`;
+                    sqlStatement += `${sqlEscapeId(key)} = ${sqlEscape(identityObject[key])}`;
                     firstField = false;
                     continue;
                 }
-                sqlStatement += `AND ${sqlEscape(key)} = ${sqlEscape(identityObject[key])}`;
+                sqlStatement += ` AND ${sqlEscapeId(key)} = ${sqlEscape(identityObject[key])}`;
             }
             return sqlStatement;
         } catch (error) {
