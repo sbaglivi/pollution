@@ -95,3 +95,54 @@ Problems I encoutered:
   submission name. Understood that we were ready to proceed with most of the rest of the stuff. A part from a couple of typos and problems with variable scope it was 'smooth sailing'. It doesn't look as clean as I would like to because I had to add some conditional logic
   based on whether I had to update the image file, which is more laborious than just updating a field in the db (need to create new imagename, save the image, delete the old one). To delete old image file I also have to do an additional database query which I don't love,
   unless somehow I can grab the old data before updating it? maybe it might worth taking a look at. Anyway now it seems done, and I also updated the delete route to delete the old image, which again meant another query to get the old name.
+
+
+
+
+
+
+
+  when I click on the map:
+  - if it's not the first click I do I have to clean up what was previously selected or the last click marker.
+  - if the click is on a feature (that is not the click marker, which should be obvious if the first step works synchronously but I'm not sure if it will be) I highlight it and show a popup containing data about the feature
+    if it's on the map I create a feature there with a popup saying where was the click and a link to submit
+  - I save the selected marker, or the newly created one, to be able to undo it on next click;
+  - if I haven't done it earlier I show the popup.
+
+  expanding:
+  if(lastInteraction !== null){
+    if(lastInteraction.type === 'select' ){
+      if(lastInteraction.marker is an array){
+        lastInteraction.marker.forEach(marker => marker.remove or source.removeFeature(marker));
+      } else {
+        lastInteraction.marker.remove(); or source.removeFeature(lastInteraction.marker);
+      }
+    } else {
+      lastInteraction.marker.setStyle(unselectedStyle);
+    }
+    // should I reset lastInteraction? in theory if the program is working correctly it should automatically be overwritten by another interaction. Also if I reset it I can't use it as condition to check if click landed on a real site or last clickmarker
+  }
+  let featuresClicked = getFeaturesAtPixel();
+  if (featuresClicked.length === 0){ // clicked on clean map
+    let marker = createMarker();
+    lastInteraction.type = 'clickMarker';
+    lastInteraction.marker = marker;
+    source.addFeature(marker);
+    createPopup(clean, coordinates); // somewhere here I might / will have to adjust the coordinates if I'm wrapping around or whatever; there's also the whole open popup to the right or left etc to be calculated.
+    positionpopup();
+  } else {
+      lastInteraction.type = 'select'; // if there isn't the problem with clicking a click marker, otherwise have to make sure it's not that case;
+    if (featuresClicked.length > 1){
+      // I already have logic to handle this. I just realized though that in the select interaction I need to be able to differentiate between multiple markers selected in last iteration or just one. Can just check if it's an array I guess.
+      lastInteraction.marker = []
+      featuresClicked.forEach(feature => 
+        feature.setStyle(selectedStyle);
+        lastInteraction.marker.push(feature);   
+      )
+    } else { // only one feature selected
+      featuresClicked[0].setStyle(selectedStyle);
+      lastInteraction.marker = featuresClicked[0] //?
+    }
+    createPopup(featuresClicked, coordinates); // will need to get data about features by comparing them to the array we're using to create them. Either this or next function will need to adjust popup positioning to be on feature coords and possibly wrap around.
+    positionPopup();
+  }

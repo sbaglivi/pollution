@@ -94,7 +94,7 @@ if (editButton) {
             body: data
         })
         if (response.ok) {
-            let result = await response.json();
+            let result = await response.text();
             console.log(result);
             for (let key in requestBody) {
                 nameToElement[key].textContent = requestBody[key];

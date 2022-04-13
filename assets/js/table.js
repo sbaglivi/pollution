@@ -79,6 +79,9 @@ class TableUI {
                         td.textContent = this.parseCoordinates(row[prop]);
                         td.classList.add('coordinates')
                         break;
+                    case 'description':
+                        td.textContent = row[prop].substring(0, 50) + '...';
+                        break;
                     default:
                         td.textContent = row[prop];
                 }
