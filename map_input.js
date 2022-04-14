@@ -218,9 +218,7 @@ map.on('singleclick', click => {
         createSelectPopup(popupElement, selectedFeatures);
     }
     popupElement.style.display = 'block';
-    // popupElement.style.display = 'absolute'; //TODO check if this is necessary
-    popupElement.style.visibility = 'visible' //TODO is all this shit necessary?
-    positionAndShowPopup(popup, click, clickedFeatures.length && clickedFeatures[0])
+    positionAndShowPopup(popupElement, popup, click, clickedFeatures.length && clickedFeatures[0])
 })
 
 function createClickMarkerPopup(popup, coordinates) {
@@ -233,21 +231,20 @@ function createClickMarkerPopup(popup, coordinates) {
     submitLink.style.display = 'inline-block'
     popup.append(submitLink);
 }
-function positionAndShowPopup(popup, click, feature = null) {
-    let [popupWidth, popupHeight] = [popup.offsetWidth, popup.offsetHeight];
+function positionAndShowPopup(popupElement, popup, click, feature = null) {
+    let [popupWidth, popupHeight] = [popupElement.offsetWidth, popupElement.offsetHeight];
     let [mapWidth, mapHeight] = map.getSize();
     // let [left, top] = map.getPixelFromCoordinate(click.coordinate);
     let [left, top] = click.pixel; // see above line for how it was done, trying to get pixel directly from click
     let [availableRight, availableBottom] = [mapWidth - left, mapHeight - top];
     let xDirection = (availableRight < popupWidth && left >= popupWidth) ? 'left' : 'right';
-    let yDirection = (availableBottom < popupWidth && top >= popupHeight) ? 'top' : 'bottom';
+    let yDirection = (availableBottom < popupHeight && top >= popupHeight) ? 'top' : 'bottom';
     let xOffset = (xDirection == 'left') ? - popupWidth - 16 : 0; // 16 is to invert the margin which by default is 8 pixel to the right and bottom
     let yOffset = (yDirection == 'top') ? - popupHeight - 16 : 0;
-    if (xOffset || yOffset) popup.setOffset([xOffset, yOffset]);
+    popup.setOffset([xOffset, yOffset]); // offset does not get reset on its own.
     if (feature) {
         let featureCoordinates = feature.getGeometry().getCoordinates();
-        let calculatedLongitude = calculateLongitude(click.coordinate[0], featureCoordinates[0]);
-        popup.setPosition([calculateLongitude(click.coordinate[0], featureCoordinates[0]), featureCoordinates[1]]) //TODO: this was using the feature latitude earlier, if it's not working I can go back to that
+        popup.setPosition([calculateLongitude(click.coordinate[0], featureCoordinates[0]), featureCoordinates[1]])
     } else {
         popup.setPosition(click.coordinate);
     }

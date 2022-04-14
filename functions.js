@@ -27,8 +27,11 @@ module.exports = {
         return imageName;
     },
     getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+    isUndefinedOrEmpty: (obj) => !(obj && Object.keys(obj).length !== 0 && Object.getPrototypeOf(obj) === Object.prototype),
     buildUpdateString: (dbName, updatesObject, identityObject) => {
         try {
+            if (module.exports.isUndefinedOrEmpty(updatesObject) || module.exports.isUndefinedOrEmpty(identityObject)) throw Error(`Received an invalid object for the updates or identifiers`);
+            console.log(identityObject);
             let sqlStatement = `UPDATE ${sqlEscapeId(dbName)} SET `
             let firstField = true;
             for (let key in updatesObject) {

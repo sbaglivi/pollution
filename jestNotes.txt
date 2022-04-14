@@ -1,0 +1,21 @@
+possible matchers:
+.toBe() checks value of a variable using Object.is
+.toEqual() checks if an object is equal to the one provided
+.not.x checks if it's different from what provided
+
+Truthiness:
+
+- toBeNull check only for null
+  .toBeUndefined / .toBeDefined checks only for undefined / defined
+  .toBeTruthy / toBeFalse checks if a value is true or not.
+
+To check floating point numbers use:
+.toBeCloseTo you don't want to fail a test for a rounding error
+
+You can check strings with a regular expression with
+.toMatch(/regExp/)
+
+.toContain() check if an array contains the value
+
+.toThrow() to check if a functions throws an error. You can also specify the exact error message or a regexp .toThrow('Input not valid');
+When you use this one you need to wrap the expect in another function otherwise the error will not be caught and the assertion will fail
