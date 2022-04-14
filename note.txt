@@ -146,3 +146,8 @@ Problems I encoutered:
     createPopup(featuresClicked, coordinates); // will need to get data about features by comparing them to the array we're using to create them. Either this or next function will need to adjust popup positioning to be on feature coords and possibly wrap around.
     positionPopup();
   }
+
+
+  to find files at given $path:
+  find $path; other options: -maxdepth 1 -> finds only files in that directory not subdirectories; -type f -> finds only files, not directories; -exec rm -iv {} \; prompts to delete each file found, -iv stands for interactive and verbose
+  {} gets replaced by each file found name, for some reason you need to escape \; or it won't work.
