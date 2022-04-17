@@ -14,12 +14,34 @@ module.exports = {
         req.session.returnTo = req.originalUrl;
         res.redirect('/login');
     },
-    processAndSaveImage: async function (initialPath, width, height, quality, finalPath) {
+    processAndSaveImage: async function (from, to, options = {}) {
         try {
-            await sharp(initialPath).resize(width, height).jpeg({ quality: quality }).toFile(finalPath)
+            if (typeof options === 'object') {
+                for (let key in options) {
+                    switch (key) {
+                        case 'width':
+                            checkValidity(options[key], 'width', 'number', 150, 900);
+                            break;
+                        case 'height':
+                            checkValidity(options[key], 'height', 'number', 150, 900);
+                            break;
+                        case 'jpegQuality':
+                            checkValidity(options[key], 'quality', 'number', 50, 100);
+                            break;
+                        default:
+                            throw Error(`Unkown option property ${key}. Accepted are: width, height, quality.`);
+                            break;
+                    }
+                }
+            } else throw Error(`Options if present needs to be an object with any of these values: width, height, jpegQuality.`)
+            await sharp(from).resize(options.width || 200, options.height || 200).jpeg({ quality: options.jpegQuality || 90 }).toFile(to)
         } catch (error) {
             throw error;
         }
+    },
+    checkValidity: (value, fieldName, type, min, max) => {
+        if (typeof value !== type) throw Error(`Invalid type received for ${fieldName}, got ${typeof value} expected ${type}`);
+        if (value < min || value > max) throw Error(`${value} is not a valid ${fieldName}: min and max accepted values are ${min} - ${max}`);
     },
     createUniqueImageName: function (submissionName) {
         let imageName = submissionName + Date.now();
@@ -27,11 +49,10 @@ module.exports = {
         return imageName;
     },
     getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
-    isUndefinedOrEmpty: (obj) => !(obj && Object.keys(obj).length !== 0 && Object.getPrototypeOf(obj) === Object.prototype),
+    isValidObject: (obj) => obj && Object.keys(obj).length !== 0 && Object.getPrototypeOf(obj) === Object.prototype,
     buildUpdateString: (dbName, updatesObject, identityObject) => {
         try {
-            if (module.exports.isUndefinedOrEmpty(updatesObject) || module.exports.isUndefinedOrEmpty(identityObject)) throw Error(`Received an invalid object for the updates or identifiers`);
-            console.log(identityObject);
+            if (!module.exports.isValidObject(updatesObject) || !module.exports.isValidObject(identityObject)) throw Error(`Received an invalid object for the updates or identifiers`);
             let sqlStatement = `UPDATE ${sqlEscapeId(dbName)} SET `
             let firstField = true;
             for (let key in updatesObject) {
@@ -57,5 +78,15 @@ module.exports = {
             throw error;
         }
     },
-    parseCoordinatesFromString: (coordinatesString) => coordinatesString.split(',').map(x => parseFloat(x)),
+    parseCoordinatesFromString: (coordinatesString) => {
+        try {
+            let splitResult = coordinatesString.split(',')
+            if (splitResult.length !== 2) throw Error(`invalid coordinate string, should be 'latitude,longitude'`);
+            let result = splitResult.map(x => parseFloat(x));
+            if (result.some(value => Number.isNaN(value))) throw Error(`invalid coordinate string should be 'latitude,longitude'`);
+            return result;
+        } catch (err) {
+            throw err;
+        };
+    }
 }

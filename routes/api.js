@@ -29,7 +29,7 @@ router.post('/createSubmission', isLoggedIn, upload.single('picture'), async (re
     try {
         makeDirectoryIfNotExists(UPLOADS_DIR + RESIZED_DIR);
         let imageName = createUniqueImageName(req.body.name);
-        await processAndSaveImage(req.file.path, 200, 200, 90, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
+        await processAndSaveImage(req.file.path, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
         deleteFile(req.file.path);
         let [date, description, author, authorId, hideAuthor] = [getFormattedDate(), req.body.description || "", req.user.username, req.user.id, req.body.hideAuthor === 'true'];
         await database.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, author_id, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -53,7 +53,7 @@ router.put('/updateSubmission/:id', isLoggedIn, upload.single('picture'), async 
             previousData = await database.query("SELECT * FROM pollution_sites WHERE id = ?", [req.params.id]); // even if the user is changing the title and I don't need the old one to generate new imagename, I still need old imagename to delete it.
             let submissionName = req.body.name ? req.body.name : previousData[0].name;
             let imageName = createUniqueImageName(submissionName)
-            await processAndSaveImage(req.file.path, 200, 200, 90, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
+            await processAndSaveImage(req.file.path, path.resolve(UPLOADS_DIR, RESIZED_DIR, imageName))
             deleteFile(req.file.path);
             req.body.image_name = imageName;
         }

@@ -151,3 +151,12 @@ Problems I encoutered:
   to find files at given $path:
   find $path; other options: -maxdepth 1 -> finds only files in that directory not subdirectories; -type f -> finds only files, not directories; -exec rm -iv {} \; prompts to delete each file found, -iv stands for interactive and verbose
   {} gets replaced by each file found name, for some reason you need to escape \; or it won't work.
+
+  I've failed for a lot of time today trying to create a wrapper that would store the # of function calls that wrapped received. I couldn't get the variable to be accessible from outside.
+  Apparently the trick is to use a named function and then define the variable as funName.x . I get confused because you don't need to do that in order to have the inner function be able to access 
+  the outer value (it remembers the context in which it was created and as long as the inner function wants to access and outside property it must be kept in memory). But as I said wanting to access that variable from outside complicates
+  things.
+  I'm such a tool. a great tool. I made 2 mistakes that I didn't see for way too long while trying to use mock functions in jest. The first was a distraction one as I copied mock.returnValue instead of returnValueOnce, which I assume
+  made the mock always use the first value? I 'assume' because there was a second problem with my code that would not make it work correctly even once the first was fixed. 
+  I was passing as return value 'true' and 'false'. You can imagine my surprise when a condition based on 'false' was running time and time again. Yeah, until I remembered that strings other than '' are considered truthy and I asked myself
+  if I might have been so ... and apparently I had been. So yeah, try to pass true and false instead of 'true' and 'false'.

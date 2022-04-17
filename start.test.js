@@ -1,5 +1,6 @@
 const functions = require("./functions");
 const fs = require('fs');
+let sharp = require('sharp');
 
 test("creating a unique image name should provide a string made by the original name + the time since epoch", () => {
     expect(functions.createUniqueImageName("test")).toMatch(/^test\d+$/);
@@ -7,7 +8,9 @@ test("creating a unique image name should provide a string made by the original 
 
 describe("Formatting a date", () => {
     test("without providing one should return a string with the current date in yyyy-mm-dd format", () => {
-        expect(functions.getFormattedDate()).toBe("2022-04-14");
+        let date = new Date();
+        let dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        expect(functions.getFormattedDate()).toBe(dateString);
     });
     test("providing one should just return the correspondent formatted string", () => {
         expect(functions.getFormattedDate(new Date("13 May 2005"))).toBe(
@@ -86,4 +89,85 @@ describe("delete file should", () => {
     test("throw an error if there isn't a file at the given path", () => {
         expect(() => functions.deleteFile('asdlfkajflda')).toThrow();
     })
+})
+describe('is valid object should', () => {
+    test(`return false if it's given a non object`, () => {
+        expect(functions.isValidObject(3)).toBe(false);
+    });
+    test(`return false if it's given an empty object`, () => {
+        expect(functions.isValidObject({})).toBe(false);
+    });
+    test(`return true when given an object with keys`, () => {
+        expect(functions.isValidObject({ a: 3 })).toBe(true);
+    });
+})
+describe('parse coordinates from string should', () => {
+    test(`return 2 floats when given a properly built string`, () => {
+        expect(functions.parseCoordinatesFromString('42.344,12.311')).toStrictEqual([42.344, 12.311])
+    })
+    test(`throw when given an invalid string`, () => {
+        expect(() => { functions.parseCoordinatesFromString('awerw,fasfd') }).toThrow();
+    });
+    test(`throw when given an invalid object`, () => {
+        expect(() => { functions.parseCoordinatesFromString({ b: 3 }) }).toThrow();
+    })
+});
+
+describe(`isLoggedIn should`, () => {
+    let req, res, next;
+    beforeAll(() => {
+        req = { session: {}, originalUrl: 'testUrl' }
+        req.isAuthenticated = jest.fn()
+        req.isAuthenticated.mockReturnValueOnce(true).mockReturnValueOnce(false);
+        res = {}
+        res.redirect = jest.fn();
+        next = jest.fn();
+    })
+    test(`call next if the request is authenticated`, () => {
+        functions.isLoggedIn(req, res, next);
+        expect(next.mock.calls.length).toBe(1);
+        expect(res.redirect.mock.calls.length).toBe(0);
+    });
+    test(`save the requested url and redirect if the request it not authenticated`, () => {
+        functions.isLoggedIn(req, res, next);
+        expect(next.mock.calls.length).toBe(1); // the one from first test, as long as it saves this?
+        expect(req.session.returnTo).toBe('testUrl')
+        expect(res.redirect.mock.calls.length).toBe(1);
+        expect(res.redirect.mock.calls[0][0]).toBe('/login');
+    });
+})
+describe(`check validity should`, () => {
+    test(`throw an error if the value provided is outside the designed boundaries`, () => {
+        expect(() => functions.checkValidity(101, 'quality', 'number', 50, 100)).toThrow();
+    });
+    test(`throw an error if the value provided is not of the correct type`, () => {
+        expect(() => functions.checkValidity('shoe', 'quality', 'number', 50, 100)).toThrow();
+    });
+    test(`work correctly if given a value of the correct type and within boundaries`, () => {
+        expect(() => functions.checkValidity(60, 'quality', 'number', 50, 100)).not.toThrow();
+    })
+})
+
+async function rejecter() {
+    throw Error('error coming from async function!')
+}
+describe(`process and save image should`, () => {
+    test(`throw an error if the options object is invalid`, () => {
+        return functions.processAndSaveImage('temp', 'temp', 'temp').catch(err => expect(err).toEqual(Error('Options if present needs to be an object with any of these values: width, height, jpegQuality.')));
+    })
+    /*
+    test(`test to see if toThrow is working correctly`, () => {
+        return expect(functions.processAndSaveImage('temp', 'temp', 'temp')).rejects.toThrow();
+    })
+    test(`test to see if toThrow is working correctly`, async () => {
+        await expect(functions.processAndSaveImage('temp', 'temp', 'temp')).rejects.toThrow();
+    })
+    test(`test to see if toThrow is working correctly`, async () => {
+        try {
+            await functions.processAndSaveImage('temp', 'temp', 'temp');
+        } catch (e) {
+            expect(e).toEqual(Error('Options if present needs to be an object with any of these values: width, height, jpegQuality.'));
+        }
+    })
+    */
 })
