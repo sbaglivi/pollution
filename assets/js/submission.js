@@ -4,6 +4,8 @@ let fileInput = document.getElementsByClassName('fileInput')[0];
 let updatedFileName = document.getElementsByClassName('updatedFileName')[0];
 let updatedFileDiv = document.getElementsByClassName('updatedFileDiv')[0];
 let imageUndoButton = document.getElementsByClassName('imageUndoButton')[0];
+let hideAuthorInput = document.getElementsByClassName('hideAuthorInput')[0];
+let hideAuthorDiv = document.getElementsByClassName('hideAuthorDiv')[0];
 fileInputLabel.addEventListener('click', e => {
     fileInput.click();
 })
@@ -49,7 +51,7 @@ if (editButton) {
     let HTMLInputs = createInputElements();
     let currentlyEditing = false;
     let applyButton = document.getElementsByClassName('applyButton')[0];
-    let modal = document.getElementsByClassName('modal')[0];
+    let modal = document.getElementsByClassName('modal-bg')[0];
     let editsDiv = document.getElementsByClassName('edits')[0];
     let confirmButton = document.getElementsByClassName('confirmButton')[0];
     let reviewButton = document.getElementsByClassName('reviewButton')[0];
@@ -57,6 +59,7 @@ if (editButton) {
     let submissionImage = document.getElementsByClassName('submissionImage')[0];
     let changes = {};
     let nameToElement = { name: titleElement, description: descriptionElement, latitude: latitudeElement, longitude: longitudeElement };
+    let hideAuthorValue = hideAuthorInput.checked;
     fileInput.addEventListener('change', e => {
         updatedFileDiv.style.display = 'block';
         updatedFileName.textContent = `New image:\n${fileInput.files[0].name}`;
@@ -70,18 +73,21 @@ if (editButton) {
     })
     fileInput.value = '';
     confirmButton.addEventListener('click', async e => {
-        let requestBody = {};
+        let elementUpdates = {};
         let data = new FormData();
         for (let input in changes) {
-            requestBody[input] = changes[input]['newValue'];
             data.append(input, changes[input]['newValue']);
+            if (input === 'hide_author') continue;
+            elementUpdates[input] = changes[input]['newValue'];
+
         }
         if (fileInput.files.length === 1) {
             data.append('picture', fileInput.files[0])
         }
+
         // console.log(changes);
-        console.log('request body is:')
-        console.log(requestBody);
+        // console.log('request body is:')
+        // console.log(requestBody);
         console.log('formdata is:')
         for (var pair of data.entries()) {
             console.log(pair[0] + ', ' + pair[1]);
@@ -96,13 +102,17 @@ if (editButton) {
         if (response.ok) {
             let result = await response.text();
             console.log(result);
-            for (let key in requestBody) {
-                nameToElement[key].textContent = requestBody[key];
+            //TODO I'm not happy with how this is done. I'm almost considering just doing a page refresh if the request goes right. Also there's something weird going on with the checkbox input where even if the request is not properly made the checkbox value does not get reset properly and when a new request is sent in it has the old value which doesn't trigger an update and throws an error instead. Also the author name does not get hidden or shown when the checkbox is updated (until refresh).
+            for (let key in elementUpdates) {
+                nameToElement[key].textContent = elementUpdates[key];
             }
             if (fileInput.files.length === 1) {
                 submissionImage.src = URL.createObjectURL(fileInput.files[0])
                 // TODO for some reason when I change the url it seems that the image loses its original size. Will have to check better and maybe set boundaries again through style.
 
+            }
+            if (hideAuthorInput.checked !== hideAuthorValue) {
+                hideAuthorValue = hideAuthorInput.checked;
             }
             currentlyEditing = false;
             // I need to reset the element width here somehow. Make the browser calculate the new correct values that I'll use until new edits
@@ -134,6 +144,11 @@ if (editButton) {
                 changes[elementsName[i]]['previousValue'] = HTMLElements[i].textContent;
                 changes[elementsName[i]]['newValue'] = HTMLInputs[i].value;
             }
+        }
+        if (hideAuthorInput.checked !== hideAuthorValue) {
+            changes['hide_author'] = {};
+            changes['hide_author']['previousValue'] = hideAuthorValue;
+            changes['hide_author']['newValue'] = hideAuthorInput.checked;
         }
         console.log(`file input files length: ${fileInput.files.length}`);
         // return changes;
@@ -177,7 +192,9 @@ if (editButton) {
         initializeInputElements(HTMLInputs, HTMLElements);
         fileInputLabel.style.display = 'none';
         resetFileInput();
+        hideAuthorInput.checked = hideAuthorValue;
         applyButton.setAttribute('hidden', 'true');
+        hideAuthorDiv.setAttribute('hidden', 'true');
     }
     function startEditing() {
         editButton.textContent = 'Stop editing';
@@ -185,6 +202,7 @@ if (editButton) {
         swapElements(HTMLElements, HTMLInputs);
         fileInputLabel.style.display = 'inline-block';
         applyButton.removeAttribute('hidden');
+        hideAuthorDiv.removeAttribute('hidden')
 
         // submission date - no, maybe i can add an update field later on but it wouldnt make sense to change the submission date.?
         // hide author ?

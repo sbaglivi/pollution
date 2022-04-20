@@ -49,13 +49,19 @@ module.exports = {
         return imageName;
     },
     getFormattedDate: (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
-    isValidObject: (obj) => obj && Object.keys(obj).length !== 0 && Object.getPrototypeOf(obj) === Object.prototype,
+    isValidObject: (obj) => obj && Object.keys(obj).length !== 0,
+    //  previously I was also checking for: && Object.getPrototypeOf(obj) === Object.prototype but the req.body seems to come out as null prototype and be unreliable
     buildUpdateString: (dbName, updatesObject, identityObject) => {
         try {
             if (!module.exports.isValidObject(updatesObject) || !module.exports.isValidObject(identityObject)) throw Error(`Received an invalid object for the updates or identifiers`);
             let sqlStatement = `UPDATE ${sqlEscapeId(dbName)} SET `
             let firstField = true;
             for (let key in updatesObject) {
+                if (key = 'hide_author') {
+                    sqlStatement += `${sqlEscapeId(key)} = ${updatesObject[key] === 'true'}`;
+                    if (firstField) firstField = false;
+                    continue;
+                }
                 if (firstField) {
                     sqlStatement += `${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
                     firstField = false;

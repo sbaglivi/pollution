@@ -4,8 +4,12 @@
         <p class="submissionId" hidden><%=submission.id%></p>
         <h1 class="title"><%=submission.name%></h1>
     <% if (editingEnabled){ %>
+        <div class="buttons">
+
         <button class="editButton">Edit</button>
         <button class="applyButton" hidden>Apply</button>
+        <button class="deleteButton">Delete</button>
+        </div>
     <% } %>
     </div>
     <div class="row">
@@ -13,6 +17,10 @@
         <% if (!submission.hide_author) { %>
             <p>by <span class="author"><%=submission.author%></span></p>
         <% } %>
+        <div class="hideAuthorDiv" hidden>
+        <label for="hideAuthor">Hide author:</label>
+        <input name='hideAuthor' class="hideAuthorInput" type="checkbox" checked="<%=!submission.hide_author%>">
+        </div>
     </div>
     <div class="row">
         <div>
@@ -35,13 +43,14 @@
     </div>
     <!-- <h2>You are <%=editingEnabled ? '' : 'not'%> allowed to edit this page</h2> -->
 </div>
-    <div class="modal">
-        <div class="edits">
-
+    <div class="modal-bg">
+        <div class="modal">
+            <div class="edits">
+            </div>
+            <div class="buttonDiv"><button class="reviewButton">Review</button>
+            <button class="confirmButton">Confirm</button>
         </div>
-        <div class="buttonDiv"><button class="reviewButton">Review</button>
-        <button class="confirmButton">Confirm</button>
-    </div>
+        </div>
     </div>
 </body>
 </html>

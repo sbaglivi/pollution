@@ -7,7 +7,7 @@ const database = require('../db'); // If I wanted to keep this a cleaner 'only r
 router.get('/', (req, res) => res.redirect('/map'));
 
 router.get('/map', (req, res) => {
-    res.render('temp', { user: req.user });
+    res.render('map', { user: req.user });
 })
 
 router.get('/table', (req, res) => {

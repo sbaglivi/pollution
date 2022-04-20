@@ -17,3 +17,14 @@
 #pollutedAreasTable .coordinates {
     text-align: right;
 }
+th {
+    padding: 4px;
+    user-select: none;
+    cursor: pointer;
+}
+.asc::after {
+    content: '\2191';
+}
+.des::after {
+    content: '\2193';
+}
