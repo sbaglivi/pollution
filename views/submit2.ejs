@@ -18,9 +18,9 @@
             <h3>Where did it happen?</h3>
             <div class="rowDiv">
                 <label for="" class="hidden">Latitude:</label>
-                <input type="number" id="latitude" placeholder="Latitude" name="latitude" value="<%=lat%>" required>
+                <input type="number" id="latitude" step="any" placeholder="Latitude" name="latitude" value="<%=lat%>" required>
                 <label for="" class="hidden">Longitude:</label>
-                <input type="number" id="longitude" placeholder="Longitude" name="longitude" value="<%=lon%>" required>
+                <input type="number" id="longitude" step="any" placeholder="Longitude" name="longitude" value="<%=lon%>" required>
             </div>
             <label for="address" class="hidden">Search for an address</label>
             <!-- <label>Choose on map</label> -->
@@ -29,6 +29,10 @@
                 <button type="button">Go</button>
             </div>
             <div class="resultsDiv"></div>
+            <div class="hideAuthorDiv">
+            <label for="hideAuthor">Hide author:</label>
+            <input type="checkbox" name="hideAuthor" value="true">
+            </div>
             <button>Signal</button>
             <!-- <div class="mapSearch">
 

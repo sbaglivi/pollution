@@ -60,6 +60,7 @@ if (editButton) {
     let changes = {};
     let nameToElement = { name: titleElement, description: descriptionElement, latitude: latitudeElement, longitude: longitudeElement };
     let hideAuthorValue = hideAuthorInput.checked;
+    let authorP = document.getElementsByClassName('authorP')[0];
     fileInput.addEventListener('change', e => {
         updatedFileDiv.style.display = 'block';
         updatedFileName.textContent = `New image:\n${fileInput.files[0].name}`;
@@ -102,7 +103,6 @@ if (editButton) {
         if (response.ok) {
             let result = await response.text();
             console.log(result);
-            //TODO I'm not happy with how this is done. I'm almost considering just doing a page refresh if the request goes right. Also there's something weird going on with the checkbox input where even if the request is not properly made the checkbox value does not get reset properly and when a new request is sent in it has the old value which doesn't trigger an update and throws an error instead. Also the author name does not get hidden or shown when the checkbox is updated (until refresh).
             for (let key in elementUpdates) {
                 nameToElement[key].textContent = elementUpdates[key];
             }
@@ -111,8 +111,10 @@ if (editButton) {
                 // TODO for some reason when I change the url it seems that the image loses its original size. Will have to check better and maybe set boundaries again through style.
 
             }
+            //TODO I'm not happy with how this is done. I'm almost considering just doing a page refresh if the request goes right.
             if (hideAuthorInput.checked !== hideAuthorValue) {
                 hideAuthorValue = hideAuthorInput.checked;
+                hideAuthorValue === true ? authorP.setAttribute('hidden', 'true') : authorP.removeAttribute('hidden');
             }
             currentlyEditing = false;
             // I need to reset the element width here somehow. Make the browser calculate the new correct values that I'll use until new edits

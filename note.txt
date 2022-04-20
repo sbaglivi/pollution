@@ -160,3 +160,11 @@ Problems I encoutered:
   made the mock always use the first value? I 'assume' because there was a second problem with my code that would not make it work correctly even once the first was fixed. 
   I was passing as return value 'true' and 'false'. You can imagine my surprise when a condition based on 'false' was running time and time again. Yeah, until I remembered that strings other than '' are considered truthy and I asked myself
   if I might have been so ... and apparently I had been. So yeah, try to pass true and false instead of 'true' and 'false'.
+
+  More mistakes from today:
+  - the validate object function or whatever was making a mess since I was passing req.body as an argument and it was created as a null object. In theory it seems that bodyParser extended:true should fix it but it wasn't doing that for me.
+    had to remove that part from the validation.
+  - Tried adding the checkbox input back and because of the logic I was using in the api it was necessary setting a value property to 'true' because I was getting the boolean value by comparing the string 'true' from the 'true' from the checkbox.
+  - The checked attribute I was using in the submission page was not working properly and I never noticed. I was changing the value of the checked property based on the data from the server thinking that it would have either a true or false value.
+    Instead the way it works is simply that when the checked attribute is set the checkbox is ...checked. 
+  
