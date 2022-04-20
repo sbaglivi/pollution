@@ -1,7 +1,7 @@
 <%- include("partials/header", {title: "Submit" , css_file: "submit.css" , js_file: "submit.js" }) %>
     <div class="formDiv">
         <h2>Signal a pollution site</h2>
-        <form method="POST" action="/api/createSubmission" enctype="multipart/form-data">
+        <form method="POST" action="/api/createSubmission" enctype="multipart/form-data" class="submitForm">
             <!-- Trying to get: title, (description), lat, lon, picture -->
             <div class="rowDiv">
                 <label class="hidden" for="picture">Title:</label>
@@ -10,7 +10,6 @@
                 <p class="hidden" id="selectedFile"></p>
                 <input type="file" name="picture" class="hidden" accept="image/png, image/jpeg" required
                     id="imageInput">
-                    // TODO need to show an error message when a user tries to submit without providing an image
             </div>
             <div class="rowDiv">
                 <label class="hidden" for="">Description (optional):</label>

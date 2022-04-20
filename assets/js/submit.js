@@ -108,7 +108,7 @@ gpsButton.addEventListener('click', (e) => {
     }
 })
 */
-let submitForm = document.getElementById('submitForm');
+// let submitForm = document.getElementsByClassName('submitForm')[0];
 // submitForm.addEventListener('submit', e => {
 //     e.preventDefault();
 //     let formData = new FormData(submitForm);
@@ -127,8 +127,16 @@ fileInput.addEventListener('click', e => {
 imageInput.addEventListener('change', e => {
     selectedFile.textContent = `${imageInput.files[0].name}`;
     // selectedFile.textContent = `${imageInput.files[0].name} ${imageInput.files[0].size}B`;
+    selectedFile.style.color = 'black';
     selectedFile.style.visibility = 'visible'
     // selectedFile.style.right = '0px';
     // selectedFile.style.top = '30px';
 
+})
+imageInput.addEventListener('invalid', _ => {
+    if (imageInput.files.length < 1) {
+        selectedFile.textContent = `Please select an image to upload.`;
+        selectedFile.style.color = 'darkRed';
+        selectedFile.style.visibility = 'visible'
+    }
 })
