@@ -33,3 +33,8 @@
                     <% } %>
         </ul>
     </div>
+    <% if (notification){ %>
+        <div class="notificationDiv <%=notification.type%>">
+            <%= notification.message %>
+        </div>
+    <% } %>

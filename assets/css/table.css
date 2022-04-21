@@ -21,6 +21,8 @@ th {
     padding: 4px;
     user-select: none;
     cursor: pointer;
+    background-color: rgb(43, 44, 49);
+    color: white;
 }
 .asc::after {
     content: '\2191';

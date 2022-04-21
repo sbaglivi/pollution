@@ -12,6 +12,8 @@ router.get('/map', (req, res) => {
 
 router.get('/table', (req, res) => {
     res.render('table')
+    req.session.notification = '';
+    req.session.save(err => { if (err) console.log(err) });
 })
 
 router.get('/submission/:id', async (req, res) => {
@@ -37,7 +39,7 @@ router.get('/submit/:latlon?', isLoggedIn, (req, res) => {
             console.log(`Error while trying to parse ${req.params.latlon} as [lat,lon] coordinates.\n${e.message}`)
         }
     }
-    res.render("submit2", { lat, lon });
+    res.render("submit", { lat, lon });
 })
 
 router.get('/profile', isLoggedIn, async (req, res) => {

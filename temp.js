@@ -61,4 +61,33 @@ async function we() {
     }
 }
 
-we();
+// we();
+
+
+let apple = {
+    name: 'tommy',
+    eat: function (phrase) {
+        console.log(`${this.name} says ${phrase}`);
+    }
+}
+
+function wrapped(fun) {
+    function temp(args) {
+        fun.call(this, args);
+        console.log(`I've been wrapped`)
+    }
+    return temp;
+}
+
+apple.eat('hey');
+// apple.eat = wrapper(apple.eat);
+apple.eat = wrapped(apple.eat);
+apple.eat('hey');
+
+
+res.render = function (fun) {
+    return function (args) {
+        fun.call(this, args);
+        req.session.notification = '';
+    }
+}

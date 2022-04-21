@@ -52,7 +52,7 @@ router.route("/register")
         try {
             let salt = await bcrypt.genSalt(SALT_ROUNDS);
             let hash = await bcrypt.hash(password, salt);
-            let results = await database.query('INSERT INTO USERS (username, hash) VALUES (?, ?)', [username, hash])
+            let results = await database.query('INSERT INTO users (username, hash) VALUES (?, ?)', [username, hash])
             if (results.affectedRows !== 1) throw Error("User registration ended up creating more or less than 1 row");
             let user = { id: results.insertId, username };
             req.login(user, error => {

@@ -29,3 +29,23 @@ body {
   color: white;
   text-decoration: none;
 }
+.notificationDiv {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.274);
+  width: fit-content;
+  padding: .5em;
+  border-radius: 8px;
+  color: white;
+  position: absolute;
+  top: 50px;
+  left: 50vw;
+  transform: translate(-50%);
+  opacity: 80%;
+
+}
+.success {
+  background-color: green;
+}
+.error {
+  background-color: red;
+}

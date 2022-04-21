@@ -168,3 +168,21 @@ Problems I encoutered:
   - The checked attribute I was using in the submission page was not working properly and I never noticed. I was changing the value of the checked property based on the data from the server thinking that it would have either a true or false value.
     Instead the way it works is simply that when the checked attribute is set the checkbox is ...checked. 
   
+  Today I noticed I had the USERS instead of user as the table name in the register route and mysql was not having any of that.
+
+  What I want to do:
+  - implement toast notifications for messages like login errors, successful new submissions, registrations etc.
+  - improve the current redirect system that saves the desired route when a non authenticated user tries to access a protected route.
+
+simply passing res.locals.notification doesn't seem enough, it seems to get reset any time I redirect somewhere to the original value specified (''). 
+I've found a way to do it through sessions, where I always pass a value stored in the session e.g. req.session.notification as res.locals.notification. Right now the issue is that it doesn't automatically get wiped out
+after a page reload etc. So now I either think of all the places that will receive an alert and set the req.var to '' after rendering or I find another way.
+
+Seems that even properly made npm packages use the session strategy. I just don't know how they automatically delete after a render.
+req.flash = function(messageType, message, redirectUrl){
+  req.session.notification = {
+    type: messageType,
+    message
+  };
+  if (redirectUrl) res.redirect(redirectUrl)
+}

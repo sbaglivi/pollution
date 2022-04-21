@@ -1,54 +1,43 @@
 <%- include("partials/header", {title: "Submit" , css_file: "submit.css" , js_file: "submit.js" }) %>
     <div class="formDiv">
-        <form id="submitForm" method="POST" action="/submit" enctype="multipart/form-data">
-            <div class="detailsDiv">
-                <h2>What happened:</h2>
-                <div class="titleDiv">
-                    <label for="name">Title</label>
-                    <input name="name" type="text" placeholder="Title" required>
-                </div>
-                <div class="descriptionDiv">
-                    <label for="description">Description (optional)</label>
-                    <textarea rows="8" name="description" placeholder="Describe what was going on"></textarea>
-                </div>
-                <div class="pictureDiv">
-                    <label id='fileInputLabel' for="picture">Upload a picture</label>
-                    <p id="selectedFile"></p>
-                    <input type="file" id="imageInput" name="picture" accept="image/png, image/jpeg" required hidden>
-                    <img src="#" id="imagePreview" alt="upload preview" hidden>
-                </div>
+        <h2>Signal a pollution site</h2>
+        <form method="POST" action="/api/createSubmission" enctype="multipart/form-data" class="submitForm">
+            <!-- Trying to get: title, (description), lat, lon, picture -->
+            <div class="rowDiv">
+            <div class="titleAndAuthor">
+                <label class="hidden" for="picture">Title:</label>
+                <input type="text" placeholder="Title" name="name" required>
+            <div class="hideAuthorDiv">
+                <input type="checkbox" name="hideAuthor" value="true">
+                <label for="hideAuthor">Submit anonymously</label>
             </div>
-            <!-- get the coordinates -->
-            <div class="coordinatesFormDiv">
-                <h2>Where did it happen:</h2>
-                <div class="geocodingDiv">
-                    <p>Search for an address:</p>
-                    <div class="geocodingForm">
-                        <!-- if I decide not to submit the address as a backup for coordinates I can do so by removing the name attribute -->
-                        <input type="text" name="address" placeholder='Search for an address'>
-                        <button type="button">Search</buttoN>
-                    </div>
-                    <div class="geocodingResultsDiv"></div>
-                </div>
-                <div class="latitudeAndLongitudeDiv">
-                    <!-- <p>Insert coordinates yourself:</p> -->
-                    <input id="latitude" type="number" step="any" placeholder="latitude" name="latitude"
-                        value="<%=lat%>">
-                    <input id="longitude" type="number" step="any" placeholder="longitude" name="longitude"
-                        value="<%=lon%>">
-                </div>
-                <!-- <div class="gpsDiv"> seems the precision is really lacking
-                    <p>Or use the current position from your device gps:</p>
-                    <button type="button" id="gpsButton">Use GPS</button>
-                    <div class="gpsResultsDiv"></div>
-                </div> -->
             </div>
-            <label for="saveAuthor">Hide author</label>
-            <input type="checkbox" name="hideAuthor" id="hideAuthor" value="true">
-            <button>Submit</button>
+                <label id="fileInputLabel">Upload an image</label>
+                <p class="hidden" id="selectedFile"></p>
+                <input type="file" name="picture" class="hidden" accept="image/png, image/jpeg" required
+                    id="imageInput">
+            </div>
+            <div class="rowDiv">
+                <label class="hidden" for="">Description (optional):</label>
+                <textarea placeholder="Description (optional)" name="description"></textarea>
+            </div>
+            <h3>Where did it happen?</h3>
+            <div class="rowDiv">
+                <label for="" class="hidden">Latitude:</label>
+                <input type="number" id="latitude" step="any" placeholder="Latitude" name="latitude" value="<%=lat%>" required>
+                <label for="" class="hidden">Longitude:</label>
+                <input type="number" id="longitude" step="any" placeholder="Longitude" name="longitude" value="<%=lon%>" required>
+            </div>
+            <label for="address" class="hidden">Search for an address</label>
+            <!-- <label>Choose on map</label> -->
+            <div class="geocodingForm">
+                <input type="text" name="address" placeholder="Search for an address">
+                <button type="button">Go</button>
+            </div>
+            <div class="resultsDiv"></div>
+            <button>Signal</button>
+            <!-- <div class="mapSearch">
+
+            </div> -->
         </form>
     </div>
-
-    </body>
-
-    </html>

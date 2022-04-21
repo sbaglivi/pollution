@@ -62,9 +62,9 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  row-gap: 2em;
+  row-gap: 1.5em;
   max-width: 80em;
-  min-width: 30em;
+  min-width: 34em;
   margin-top: 2em;
 }
 .rowDiv {
@@ -76,7 +76,7 @@ form {
 }
 #selectedFile {
   transform: translate(0, 100%);
-  bottom: -4px;
+  bottom: 12px;
   right: 0px;
 }
 .detailsDiv {
@@ -155,15 +155,18 @@ textarea {
 button {
   padding: 2px 4px;
 }
-.resultDiv {
-  width: 90%;
-  margin-bottom: 10px;
+.resultsDiv {
+  display: none;
+  margin-inline: 1em;
+}
+.resultsDiv > *+* {
+  margin-top: 10px; 
 }
 .resultDiv:hover {
-  background-color: grey;
+  background-color: rgb(202, 202, 209);
 }
 .active {
-  background-color: grey;
+  background-color: rgb(202, 202, 209);
 }
 /* Hide number input arrows */
 /* Chrome, Safari, Edge, Opera */
@@ -176,4 +179,14 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+.titleAndAuthor {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1em;
+}
+input[type='checkbox'] {
+  accent-color: #2b2c31;
+  transform: scale(1.1);
+  margin-right: .5em;
 }

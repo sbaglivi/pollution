@@ -53,6 +53,7 @@ searchForm.addEventListener('submit', async (e) => {
 */
 let activeResult = null;
 const displayResults = (container, results) => {
+    container.style.display = 'block';
     container.innerHTML = "";
     activeResult = null;
     let htmlList = htmlFromResults(results)

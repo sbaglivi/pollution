@@ -21,10 +21,14 @@ const database = require('./db');
 let sessionStore = new MySQLStore({}, database.pool);
 app.use(session({
   secret: 'keyboard cat',
-  resave: 'false',
-  saveUninitialized: 'false',
+  resave: false,
+  saveUninitialized: false,
   store: sessionStore,
 }))
+app.use((req, res, next) => {
+  res.locals.notification = req.session.notification;
+  next();
+})
 
 app.use(passport.authenticate('session'))
 app.use('/', authRoutes);
