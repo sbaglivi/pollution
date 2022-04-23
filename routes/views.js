@@ -12,8 +12,6 @@ router.get('/map', (req, res) => {
 
 router.get('/table', (req, res) => {
     res.render('table')
-    req.session.notification = '';
-    req.session.save(err => { if (err) console.log(err) });
 })
 
 router.get('/submission/:id', async (req, res) => {

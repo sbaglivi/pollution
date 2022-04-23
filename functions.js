@@ -10,9 +10,18 @@ module.exports = {
     },
     deleteFile: path => fs.unlinkSync(path),
     isLoggedIn: (req, res, next) => {
+        console.log(`req ${req.isAuthenticated() ? 'is' : 'is not'} authenticated`)
+        console.log(req.user);
         if (req.isAuthenticated()) return next();
         req.session.returnTo = req.originalUrl;
         res.redirect('/login');
+    },
+    isNotLoggedIn: (req, res, next) => {
+        if (!req.isAuthenticated()) {
+            return next();
+        }
+        //TODO set a notification here that user is already logged in
+        res.redirect('/');
     },
     processAndSaveImage: async function (from, to, options = {}) {
         try {

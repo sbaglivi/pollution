@@ -57,7 +57,7 @@ textarea {
   visibility: hidden;
   position: absolute;
 }
-form {
+.submitForm {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -188,5 +188,5 @@ input[type=number] {
 input[type='checkbox'] {
   accent-color: #2b2c31;
   transform: scale(1.1);
-  margin-right: .5em;
+  margin-right: 2px;
 }

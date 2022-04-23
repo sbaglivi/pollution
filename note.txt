@@ -179,6 +179,7 @@ I've found a way to do it through sessions, where I always pass a value stored i
 after a page reload etc. So now I either think of all the places that will receive an alert and set the req.var to '' after rendering or I find another way.
 
 Seems that even properly made npm packages use the session strategy. I just don't know how they automatically delete after a render.
+
 req.flash = function(messageType, message, redirectUrl){
   req.session.notification = {
     type: messageType,
@@ -186,3 +187,54 @@ req.flash = function(messageType, message, redirectUrl){
   };
   if (redirectUrl) res.redirect(redirectUrl)
 }
+the npm package has its own render method that injects the messages in the rendered view and then empties the session notification queue. 
+I still don't understand how it works when it redirects somewhere since res.render does not seem to have been overwritten. The basic example never shows the receiving end of a req.flash redirect, maybe the route there calls
+req.flash or the res.render has the session notification object manually included.
+
+From how this package works it seems that I just have to manually adjust routes to display a notification when available and then delete it once rendered.
+If a post from stackoverflow that I've found is still updated and correct then I need to either delete the session message first and then render the view or render the view and then delete message and manually save session because
+it is not automatically saved after rendering.
+
+Messages:
+- failed login -> (shown on) login page
+- failed registration (if user already exists) -> registration page
+- successful login / registration -> map page OR submit page if I have a request saved to that route.
+- successful submission -> map page (don't think there's any point redirecting anywhere else aside maybe the submission page itself?)
+- update of submission -> submission page itself (this would mean triggering a refresh which would make the code to update data in place redundant)
+- successful deletion -> table
+- need to be logged in to do that -> login page
+All receiving pages: map / table / login / registration / submission (basically all views. Now I'm wondering if I can just set a middleware after importing routes and that will automatically run on each request after the route.)
+If I set it to just clear every time it can't work. It would wipe out any message before it's shown. Maybe I can add some sort of counter for the times it has been shown that starts at 0. When a view shows a message it raises
+the counter by 1 and if it is 1 or more it gets wiped out.
+
+Possible redirects are only protected routes, if a non-auth user wants to visit a non-protected route he can do so whenever.
+The only protected route currently is submit, there's also the 'profile' view but I think that's pretty useless and I'm going to remove it. In the future there might be a view to manage your account to change password or delete it.
+Logic is:
+- I save the desired Route when: user wants to visit protected route but can't.
+- I delete the saved route when: - user logs in and gets redirected there.
+                                 - user clicks away before finishing the login (if the 'away' is not the registration page, by default I redirect to login but a new user will not have an account yet). 
+                                   -> on routes != from login and registration if a user is coming from the login or registration route and desiredRoute is set I unset it.
+                                   can: - save previous url after each page visit in session or cookie: window.location.href or whatever - can try to rely on document.referrer. This might require me setting up headers 'user-agent' or 'referer'
+                                   whatever you set up in the referer header is what you get in the document.referrer. User can turn it off though so it's not always reliable. If I want reliable I need to save past url.
+If a user gets redirected it's always after login.                            
+
+I want to execute middleware for the routes I've defined but not for catch all routes. For example I don't want it for api calls and I don't want it for things like favicon or for image imports.
+Most robust solution but not elegant: create a list or routes for which the middleware should be ran and check on any request if the url is contained in the list of routes.
+Rearranging the order or router imports got me close to ok but any request like favicon or whatever will still fuck it up.
+
+So much shit going wrong for no clear reason. Login is failing to work
+I tried making the whole login strategy synchronous to make sure it wasn't async giving problems
+As of right now after a successful login I see req.isAuthenticated() being true before redirecting but sometimes immediately after the redirect it is still false and the user gets redirected elsewhere because not logged in. Even though he is.
+How does the browser check for req.user?
+
+I finally fucking found what was wrong. I wansn't an obvious problem on my end but: https://github.com/jaredhanson/passport/issues/306
+Req.login is async and sometimes it doesn't finish 'flushing to the session store' by the time the next request comes in (my redirect). If that's the case then the next request is authenticated.
+I had gotten close to solving it by using req.session.save but the key part was putting the redirect inside the callback rather than after the call.
+
+The fact that I wasted so much time on this issue is making me fear working with methods that I don't fully understand in the future. 
+I expected code that ran within a function without any mention of async etc to run synchronously but clearly that was not the case. In my login route example I have the code after
+req.session.save run before the code within its callback. 
+I need to get a better understanding of when code can run asynchronously.
+I think most of the time there is a callback I should expect that to be an async method?
+setTimeout is an obvious example.
+Again, for some reason if I see fun1(callback); fun2; I expext the order of execution to be fun1->callback->fun2. Instead of fun2->fun1->callback (can the order be fun1->callback->fun2 if fun1 is super quick because only made of sync code?)
