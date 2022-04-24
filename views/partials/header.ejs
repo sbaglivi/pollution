@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link href="/css/header.css" rel="stylesheet">
     <link href="/css/<%=css_file%>" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <% if (js_file) { %>
         <script src='/js/<%=js_file%>' type="text/javascript" defer></script>
         <% } %>
@@ -16,11 +17,13 @@
 <body>
     <div class="navbar">
         <h1>Pollution Tracker</h1>
+        <input class='navbar-collapse-checkbox' id='collapse' type="checkbox" name="collapse" id="">
+        <label class='navbar-collapse'for="collapse"></label>
         <ul class="navbar-links">
             <li><a href="/map">Map</a></li>
             <li><a href="/table">Table View</a></li>
             <li><a href="/submit">Submit</a></li>
-            <li>|</li>
+            <li class="separationLi">|</li>
             <% if (user) { %>
                 <li><a href="/profile">
                         Welcome back, <%=user.username%>

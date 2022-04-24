@@ -30,3 +30,15 @@ th {
 .des::after {
     content: '\2193';
 }
+@media screen and (max-width: 750px) {
+    .collapsible {
+        display: none;
+    }
+}
+@media screen and (max-width: 500px) { 
+    table {
+        font-size: 0.75em;
+        /* font-size: 14px; */
+    }
+    
+}

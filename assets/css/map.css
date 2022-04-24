@@ -79,3 +79,8 @@
   top:0px;
   right: 0px;
 }
+@media screen and (max-width: 600px){
+  .featureDiv {
+    min-width: 8em;
+  }
+}

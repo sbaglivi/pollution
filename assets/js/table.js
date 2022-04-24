@@ -50,6 +50,8 @@ class TableUI {
             th = document.createElement('th');
             th.textContent = prop;
             th.addEventListener('click', this.sortAndRender.bind(this, th.textContent));
+            if (prop === 'description')
+                th.classList.add('collapsible');
             tr.append(th);
             this.theaders.push(th);
         }
@@ -82,7 +84,8 @@ class TableUI {
                         td.classList.add('coordinates')
                         break;
                     case 'description':
-                        td.textContent = row[prop].substring(0, 50) + '...';
+                        td.textContent = row[prop].substring(0, 30) + '...';
+                        td.classList.add('collapsible')
                         break;
                     default:
                         td.textContent = row[prop];
