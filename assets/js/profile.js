@@ -1,3 +1,5 @@
+import TableUI from "./TableClass.js";
+let table = new TableUI('tableDiv', ['latitude', 'longitude', 'name', 'description', 'submission_date'], true)
 let deleteSpans = document.getElementsByClassName('deleteSpan');
 Array.from(deleteSpans).forEach(deleteSpan => {
     deleteSpan.addEventListener('click', async e => {

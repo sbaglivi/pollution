@@ -1,8 +1,10 @@
-<%- include('partials/header', {title: 'Profile' , css_file: 'profile.css' , js_file: 'profile.js' }) %>
+<%- include('partials/header', {title: 'Profile' , css_file: 'profile.css' , js_file: 'profile.js', module: true}) %>
 
     <body>
         <div class="content">
             <h1>Welcome to the profile section</h1>
+            <a href="/updatePassword">Update Password</a>
+            <div id="tableDiv"></div>
             <% if (submissions.length> 0){ %>
                 <h3>Here are your submissions:</h3>
                 <ul>

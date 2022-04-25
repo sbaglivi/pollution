@@ -238,3 +238,20 @@ I need to get a better understanding of when code can run asynchronously.
 I think most of the time there is a callback I should expect that to be an async method?
 setTimeout is an obvious example.
 Again, for some reason if I see fun1(callback); fun2; I expext the order of execution to be fun1->callback->fun2. Instead of fun2->fun1->callback (can the order be fun1->callback->fun2 if fun1 is super quick because only made of sync code?)
+
+
+trying to build a query string for a get request that needs data from db:
+to encode array arr;
+encodeURIComponent(JSON.stringify(arr))
+
+then once I get the query string I
+-create an url: let url = new URL(link);
+-select array query param: let arr = decodeURIComponent(JSON.parse(url.searchParams.get('arr')))
+-select other query param: let currentUserOnly = url.searchParams.get('currentUserOnly')
+
+
+
+When you create a session a cookie is set on the client browser. This cookie contains a 'secret id'. With each request that the user makes express looks in open sessions for one that matches that id and if there is one it populates req.session
+with shit from the database session. Passport just builds on top of this: when a user tries to login it uses the logic provided by the developer to see if the credentials are correct and if they are it stores in the session the serialized version 
+of the user (and makes it available on the req object itself at req.user ?)
+What I'm still not sure about is when does passport deserialize the user.

@@ -18,11 +18,49 @@ const upload = multer({ storage })
 router.get('/getAllSubmissions', async (req, res) => {
     try {
         let results = await database.query('SELECT * FROM pollution_sites');
+        let temp;
+        console.log(req.query) //TODO remove me
+        for (let key in req.query) {
+            console.log(`req query key is ${req.query[key]}`)
+            temp = JSON.parse(req.query[key]);
+            console.log(temp, typeof temp)
+        }
         res.status(200).json(results);
     } catch (error) {
         throw error;
     }
 })
+router.get('/getSubmissions', async (req, res) => {
+    try {
+        let currentUserOnly, fields;
+        if (req.query.currentUserOnly) {
+            currentUserOnly = JSON.parse(req.query.currentUserOnly)
+        }
+        if (req.query.fields)
+            fields = JSON.parse(req.query.fields);
+        console.log(fields)
+        let sqlQuery = buildQuery(currentUserOnly ? req.user.id : '', fields);
+        let results = await database.query(sqlQuery);
+        res.status(200).json(results);
+    } catch (err) {
+        throw err;
+    }
+})
+const buildQuery = (userId, fields) => {
+    let query = `SELECT${fields.map(field => ' ' + field)} FROM pollution_sites`;
+    if (userId)
+        query += ' WHERE author_id = ' + userId;
+    return query;
+}
+const deleteUserAndSubmissions = async userId => {
+    try {
+        await database.query('DELETE FROM pollution_sites WHERE author_id = ?', [userId]);
+        await database.query('DELETE FROM users WHERE id = ?', [userId]);
+    }
+    catch (e) {
+        throw e;
+    }
+}
 
 // I'm not 100% sure but picture comes from either the name of the file upload input or from the parameters set in multer configuration
 router.post('/createSubmission', isLoggedIn, upload.single('picture'), async (req, res) => {

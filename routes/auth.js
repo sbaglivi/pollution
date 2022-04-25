@@ -5,6 +5,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 let database = require('../db');
 const { isNotLoggedIn } = require('../functions');
+const SALT_ROUNDS = 10;
 
 router.use((req, res, next) => {
     res.locals.user = req.user;
@@ -91,9 +92,9 @@ router.route('/login')
                     if (err) return next(err);
                     let redirectUrl = req.session.returnTo || '/';
                     delete req.session.returnTo;
+                    req.session.notification = { type: 'success', message: `Welcome back, ${user.username}` };
                     req.session.save(err => {
                         if (err) return next(err);
-                        req.session.notification = `Welcome back, ${user.username}`;
                         res.redirect(redirectUrl);
                     })
                 })
@@ -106,7 +107,6 @@ router.route("/register")
     .post(isNotLoggedIn, async (req, res) => {
         let { username, password } = req.body;
         // Stopped checking for username uniqueness since the database now has the field has unique and will throw an error if it's not.
-        const SALT_ROUNDS = 10;
         try {
             let salt = await bcrypt.genSalt(SALT_ROUNDS);
             let hash = await bcrypt.hash(password, salt);
@@ -131,6 +131,44 @@ router.post('/logout', (req, res) => {
     // console.log('done logging out')
     // I think the issue is that if I try to logout when I'm on the login page, the url is already the one that express wants to redirect to and therefore nothing updates.
     // if I want to keep redirecting to login I need to make sure the user is not already on that page, I need a system that redirect user if they try to visit login when they're already logged in.
+})
+router.get('/updatePassword', (req, res) => res.render('updatePassword'))
+router.post('/updatePassword', (req, res) => {
+    database.pool.query('SELECT hash FROM users WHERE id = ?', [req.user.id], (err, results) => {
+        if (err) throw err;
+        let passwordHash = results[0].hash;
+        bcrypt.compare(req.body.password, passwordHash, (err, match) => {
+            if (err) throw err;
+            if (!match) {
+                req.session.notification = { type: 'error', message: 'Provided old password is not correct' };
+                req.session.save(err => {
+                    if (err) throw err;
+                    return res.redirect('/profile'); // ? is this what I should be doing here, not sure this will trigger a page reload.
+                })
+            } else {
+                let newHash = bcrypt.hash(req.body.newPassword, SALT_ROUNDS, (err, newHash) => {
+                    if (err) throw err;
+                    database.pool.query('UPDATE users SET hash = ? WHERE id = ?', [newHash, req.user.id], (err, results) => {
+                        if (err) throw err;
+                        if (results.changedRows === 1) {
+                            req.session.notification = { type: 'success', message: 'Password updated successfully' };
+                            req.session.save(err => {
+                                if (err) throw err;
+                                return res.redirect('/profile'); // ? is this what I should be doing here, not sure this will trigger a page reload.
+                            })
+                        } else {
+                            req.session.notification = { type: 'error', message: 'Could not update the password. Are you sure you changed it from the old one?' };
+                            console.log(`Old password for user ${req.user.id} matched but after trying to update the password 0 or more than 1 row got changed`);
+                            req.session.save(err => {
+                                if (err) throw err;
+                                return res.redirect('/profile'); // ? is this what I should be doing here, not sure this will trigger a page reload.
+                            })
+                        }
+                    })
+                })
+            }
+        })
+    })
 })
 
 module.exports = router;

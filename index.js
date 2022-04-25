@@ -7,7 +7,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const authRoutes = require('./routes/auth');
 const viewsRoutes = require('./routes/views');
 const apiRoutes = require('./routes/api');
-const VIEW_ROUTES = ['/map', '/table', '/submit']
+const VIEW_ROUTES = ['/map', '/table', '/submit', '/profile']
 const AUTH_ROUTES = ['/login', '/register'];
 
 // TODO: fix this shit
@@ -29,7 +29,8 @@ app.use(session({
 }))
 
 app.use((req, res, next) => {
-
+  res.locals.notification = "";
+  res.locals.module = false; // table views import a class, to do that the import needs to have 'module' type. This sets it as false default so I don't have to change each header import to have module: false.
   if (VIEW_ROUTES.includes(req.originalUrl) || AUTH_ROUTES.includes(req.originalUrl)) {
     console.log(`trying to visit ${req.originalUrl}, previously was on: ${req.session.previousUrl}`)
     if (AUTH_ROUTES.includes(req.session.previousUrl) && VIEW_ROUTES.includes(req.originalUrl)) {
@@ -37,8 +38,11 @@ app.use((req, res, next) => {
       req.session.returnTo = '';
     }
     req.session.previousUrl = req.originalUrl;
-    res.locals.notification = req.session.notification;
-    if (req.session?.notification) delete req.session.notification;
+
+    if (req.session?.notification) {
+      res.locals.notification = req.session.notification;
+      delete req.session.notification;
+    }
   }
   next();
 })
