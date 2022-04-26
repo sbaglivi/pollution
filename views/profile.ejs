@@ -2,17 +2,11 @@
 
     <body>
         <div class="content">
-            <h1>Welcome to the profile section</h1>
-            <a href="/updatePassword">Update Password</a>
-            <div id="tableDiv"></div>
-            <% if (submissions.length> 0){ %>
+            <div class="row">
                 <h3>Here are your submissions:</h3>
-                <ul>
-                    <% submissions.forEach(submission=> { %>
-                    <li><span class="idSpan" hidden><%=submission.id%></span><a href='/submission/<%=submission.id%>' class="nameSpan"><%=submission.name%></a> - <span class='deleteSpan'>&#10006;</span></li>
-                    <% }) %>
-                </ul>
-                <% } %>
+                <a href="/accountManagement" class="accountLink">Manage your account</a>
+            </div>
+            <div id="tableDiv"></div>
         </div>
     </body>
 

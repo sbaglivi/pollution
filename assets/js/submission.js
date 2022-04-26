@@ -61,6 +61,22 @@ if (editButton) {
     let nameToElement = { name: titleElement, description: descriptionElement, latitude: latitudeElement, longitude: longitudeElement };
     let hideAuthorValue = hideAuthorInput.checked;
     let authorP = document.getElementsByClassName('authorP')[0];
+    let deleteButton = document.getElementsByClassName('deleteButton')[0];
+    deleteButton.addEventListener('click', async () => {
+        if (confirm('Do you really want to delete this submission?')) {
+            console.log('Submission deleted')
+            let result = await fetch(`/api/deleteSubmission/${submissionId}`, {
+                method: 'DELETE',
+            })
+            if (!result.ok) {
+                console.log(`Could not delete submission`);
+                console.log(result);
+                return;
+            }
+            let response = await result.json();
+            window.location.href = response.redirectUrl;
+        }
+    })
     fileInput.addEventListener('change', e => {
         updatedFileDiv.style.display = 'block';
         updatedFileName.textContent = `New image:\n${fileInput.files[0].name}`;

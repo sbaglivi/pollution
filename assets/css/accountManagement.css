@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-inline: 1em;
+}
+input {
+    font-size: inherit;
+    font-family: inherit;
+    text-align: center;
+}
+.loginForm button {
+    width: 80%;
+    /* display: block; */
+    padding: 4px;
+    margin-top: 1em;
+    margin-inline: auto;
+}
+.loginForm > *+*{
+    margin-top: 1em;
+}
+.inputLine input {
+    border: none;
+    border-bottom: 1px solid black;
+}
+.inputLine {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 300px;
+}
+.deleteButton {
+    background-color: red;
+    border: 1px solid rgba(0,0,0,0.3);
+    padding: .5em;
+    padding-inline: 1em;
+    color: white;
+    border-radius: 8px;
+    margin-inline: auto;
+    display: block;
+    margin-bottom: 1em;
+}
+.deleteButton:hover {
+    background-color: darkred;
+}
+button {
+    cursor: pointer;
+}
+@media screen and (max-width: 800px) {
+    .container {
+        flex-direction: column;
+    }
+}

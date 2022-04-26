@@ -6,7 +6,7 @@
     align-items: center;
     width: min(40em, 80vw);
     row-gap: 1em;
-    margin-top: max(1em, 10vh);
+    margin-block: max(1em, 8vh);
 }
 .row {
   width: 100%;
@@ -118,4 +118,10 @@ button {
 }
 .buttons > *+*{
   margin-left: 4px;
+}
+@media screen and (max-width: 800px) {
+  .row {
+    flex-direction: column;
+    row-gap: 1em;
+  }
 }

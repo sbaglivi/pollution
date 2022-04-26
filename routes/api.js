@@ -112,7 +112,11 @@ router.delete('/deleteSubmission/:id', isLoggedIn, async (req, res) => {
         let result = await database.query('DELETE FROM pollution_sites WHERE id = ? AND author_id = ?', [req.params.id, req.user.id]);
         deleteFile(path.resolve(UPLOADS_DIR, RESIZED_DIR, previousData[0].image_name));
         if (result.affectedRows !== 1) throw Error("Either no rows were deleted because you don't have authorization or multiple were deleted because there were duplicates");
-        res.send(`Submission with id ${req.params.id} deleted correctly`);
+        req.session.notification = { message: `Submission deleted`, type: 'success' }
+        req.session.save(err => {
+            if (err) throw err;
+            res.status(200).json({ redirectUrl: '/profile' })
+        })
     } catch (error) {
         throw error;
     }

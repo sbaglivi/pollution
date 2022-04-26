@@ -132,7 +132,7 @@ router.post('/logout', (req, res) => {
     // I think the issue is that if I try to logout when I'm on the login page, the url is already the one that express wants to redirect to and therefore nothing updates.
     // if I want to keep redirecting to login I need to make sure the user is not already on that page, I need a system that redirect user if they try to visit login when they're already logged in.
 })
-router.get('/updatePassword', (req, res) => res.render('updatePassword'))
+router.get('/accountManagement', (req, res) => res.render('accountManagement'))
 router.post('/updatePassword', (req, res) => {
     database.pool.query('SELECT hash FROM users WHERE id = ?', [req.user.id], (err, results) => {
         if (err) throw err;

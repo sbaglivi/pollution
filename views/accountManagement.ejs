@@ -1,0 +1,26 @@
+<%- include("partials/header", {title: "Password Update" , css_file: "accountManagement.css" , js_file: "accountManagement.js" }) %>
+    <div class="container">
+        <div class="column">
+            <form class='loginForm' action="/updatePassword" method="POST">
+                <div class="inputLine">
+                    <label for="password">Old password:</label>
+                    <input type="password" name="password" tabindex='1' required>
+                </div>
+                <div class="inputLine">
+                    <label for="newPassword">New password:</label>
+                    <input type="password" name="newPassword" tabindex='2' required>
+                </div>
+                <div class="inputLine"><button tabindex="=3">Update your password</button></div>
+            </form>
+        </div>
+        <div class="column">
+            <form action="/deleteAccount" method="POST" id="deleteAccountForm">
+                <button class="deleteButton">Delete Account</button>
+                <p>This will delete all your submissions and your account.</p>
+                <p>The process is not reversible.</p>
+            </form>
+        </div>
+    </div>
+    </body>
+
+    </html>
