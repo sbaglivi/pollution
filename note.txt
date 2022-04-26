@@ -252,6 +252,6 @@ then once I get the query string I
 
 
 When you create a session a cookie is set on the client browser. This cookie contains a 'secret id'. With each request that the user makes express looks in open sessions for one that matches that id and if there is one it populates req.session
-with shit from the database session. Passport just builds on top of this: when a user tries to login it uses the logic provided by the developer to see if the credentials are correct and if they are it stores in the session the serialized version 
+with shit from the database session. Passport just builds on top of this: when a user tries to login it uses the logic provided by the developer to see if the credentials are correct. If they are, passport stores in the session the serialized version 
 of the user (and makes it available on the req object itself at req.user ?)
 What I'm still not sure about is when does passport deserialize the user.
