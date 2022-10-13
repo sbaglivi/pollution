@@ -71,7 +71,7 @@ router.post('/createSubmission', isLoggedIn, upload.single('picture'), async (re
         deleteFile(req.file.path);
         let [date, description, author, authorId, hideAuthor] = [getFormattedDate(), req.body.description || "", req.user.username, req.user.id, req.body.hideAuthor === 'true'];
         await database.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, author_id, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [req.body.latitude, req.body.longitude, req.body.name, imageName, author, authorId, description, hideAuthor, date]);
+            [req.body.latitude.slice(0,10), req.body.longitude.slice(0,10), req.body.name, imageName, author, authorId, description, hideAuthor, date]);
         req.session.notification = { type: 'success', message: `Successfuly created submission ${req.body.name}` };
         res.redirect('/table') //TODO update to /map
     } catch (e) {

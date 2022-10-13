@@ -66,17 +66,22 @@ module.exports = {
             let sqlStatement = `UPDATE ${sqlEscapeId(dbName)} SET `
             let firstField = true;
             for (let key in updatesObject) {
-                if (key = 'hide_author') {
-                    sqlStatement += `${sqlEscapeId(key)} = ${updatesObject[key] === 'true'}`;
-                    if (firstField) firstField = false;
-                    continue;
-                }
                 if (firstField) {
-                    sqlStatement += `${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
+                    if (key == 'hide_author') {
+                        sqlStatement += `${sqlEscapeId(key)} = ${updatesObject[key] === 'true'}`;
+                    } else {
+                        sqlStatement += `${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
+                        firstField = false;
+                        continue;
+                    }
                     firstField = false;
-                    continue;
+                } else {
+                    if (key == 'hide_author') {
+                        sqlStatement += `, ${sqlEscapeId(key)} = ${updatesObject[key] === 'true'}`;
+                    } else {
+                        sqlStatement += `, ${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
+                    }
                 }
-                sqlStatement += `, ${sqlEscapeId(key)} = ${sqlEscape(updatesObject[key])}`;
             }
             sqlStatement += ` WHERE `
             firstField = true;

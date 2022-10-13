@@ -11,10 +11,10 @@ const VIEW_ROUTES = ['/map', '/table', '/submit', '/profile']
 const AUTH_ROUTES = ['/login', '/register'];
 
 // TODO: fix this shit
-app.use(express.static('views'));
+// app.use(express.static('views'));
 app.use(express.static('assets'));
 app.use(express.static('uploads'));
-app.use(express.static('/'))
+// app.use(express.static('/'))
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));

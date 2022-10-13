@@ -202,9 +202,10 @@ router.route("/submit/:latlon?")
         let author = req.user.username;
         let authorId = req.user.id;
         let hideAuthor = req.body.hideAuthor === 'true';
+        let [latitude, longitude] = [req.body.latitude.slice(0,10), req.body.longitude.slice(0,10)];
         try {
             connection.query("INSERT INTO pollution_sites (latitude, longitude, name, image_name, author, author_id, description, hide_author, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [req.body.latitude, req.body.longitude, req.body.name, imageName, author, authorId, description, hideAuthor, date])
+                [latitude, longitude, req.body.name, imageName, author, authorId, description, hideAuthor, date])
         } catch (e) {
             res.send(`Error while trying to save the data in the database:\n${e.message}`);
         }

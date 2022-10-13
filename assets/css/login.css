@@ -2,18 +2,17 @@
     flex-grow: 1;
     max-width: 80em;
     margin-inline: auto;
-    margin-top: max(25vh, 1em);
-    position: relative
-}
-.container *+* {
-    /* margin-top: 1.5em; */
+    /* margin-top: max(25vh, 1em); */
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 .loginForm {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    row-gap: 1.5em;
+    row-gap: 3em;
 }
 input {
     font-size: inherit;

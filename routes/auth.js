@@ -122,12 +122,14 @@ router.route("/register")
         }
     })
 
-router.post('/logout', (req, res) => {
-    req.logout();
-    req.session.save(err => {
-        if (err) throw err;
-        res.redirect('/login') //Todo if the user gets redirect to the same page he's on the page won't reload and the interface will still look as if user is logged in. Since it seems that I can't force a page refresh from the server I'm redirecting to one of the few routes that cannot be the same as the one the user is coming from.
-    })
+router.post('/logout', (req, res, next) => {
+    req.logout(err => {
+        if (err) next(err);
+        req.session.save(err => {
+            if (err) throw err;
+            res.redirect('/login') //Todo if the user gets redirect to the same page he's on the page won't reload and the interface will still look as if user is logged in. Since it seems that I can't force a page refresh from the server I'm redirecting to one of the few routes that cannot be the same as the one the user is coming from.
+        })
+    });
     // console.log('done logging out')
     // I think the issue is that if I try to logout when I'm on the login page, the url is already the one that express wants to redirect to and therefore nothing updates.
     // if I want to keep redirecting to login I need to make sure the user is not already on that page, I need a system that redirect user if they try to visit login when they're already logged in.
