@@ -5,7 +5,7 @@ let dbSettings = {
     host: 'localhost',
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    database: 'pollution'
+    database: process.env.DB_NAME
 }
 class DB {
     constructor() {

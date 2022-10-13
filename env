@@ -1,0 +1,3 @@
+DB_USERNAME="SQL_username"
+DB_PASSWORD="SQL_password"
+DB_NAME="SQL_database_name"
