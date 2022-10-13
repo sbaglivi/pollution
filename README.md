@@ -7,16 +7,14 @@ The project uses NodeJS, Express, MySQL, Multer (for the upload of images), Shar
 The simplest pages are server rendered through EJS templates, the pages which require some more work on the front-end are coded through vanilla js (no front-end framework used).
 
 ## How to install:
+### You need to have a mysql server, local or remote
 - Clone the repository `git clone https://github.com/sbaglivi/pollution`
 - Enter the folder and install dependencies `cd pollution && npm i`
-- You need to have a mysql server installed, if you do:
-  - Create a database called pollution and grant privileges to a user with username / password of your choice
-  - Initialize the database tables by running the commands provided in `TO BE FILLED`
-  - Create a .env file in the root directory of the project with key / value pairs
-  ```
-  DB_USERNAME="yourDatabaseUsername"
-  DB_PASSWORD="yourDatabasePassword"
-  ```
+- To setup the database:
+  - (Optional) Create a user to interact with this database (you can use an existing one if you prefer)
+  - Create a database, grant all privileges on it to the user previously created
+  - Initialize the database tables by running `mysql -u [username] -p [database] < dump.sql` while you're in the project root directory (fill in [username] and [database] with the ones you've just created and then input the relative password to confirm).
+  - Rename the `env` file in the project root directory to `.env` and update the value fields (the ones after the = sign and within "") to the ones you've chosen (username, password, database name).
 - Run `node index.js` and the website will be waiting for you at `localhost:3000'!
 
 ## How to use:
