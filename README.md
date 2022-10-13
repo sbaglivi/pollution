@@ -1,5 +1,5 @@
 # Pollution
-![Website image](./assets/images/website_ss.jpg)
+![website main page](https://github.com/sbaglivi/pollution/blob/master/assets/images/website_ss.png?raw=true)
 Nodejs project that allows users to report polluted areas and document them with a screenshot.
 
 The app is available at: 
